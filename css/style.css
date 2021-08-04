@@ -1,0 +1,75 @@
+* {
+    box-sizing: border-box;
+}
+
+header {
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 22px;
+    background-color: #FFFFFF;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+header > ion-icon {
+    font-size: 42px;
+}
+
+main {
+    background-color: #E5E5E5;
+    height: calc(100vh - 160px);
+    margin: 80px 0;
+}
+
+.ctn-send-message {
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF;
+    padding: 0px 17px;
+}
+
+input:focus {
+    outline: none;
+}
+
+
+.ctn-send-message > input {
+    width: 90%;
+    height: 70%;
+    border: none;
+    font-size: 18px;
+    color: black;
+    padding-left: 10px;
+}
+
+.ctn-send-message > ion-icon {
+    width: 10%;
+    font-size: 42px;
+}
+
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #000000;
+    opacity: 1; /* Firefox */
+  }
+  
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #000000;
+  }
+  
+  ::-ms-input-placeholder { /* Microsoft Edge */
+    color: #000000;
+  }
