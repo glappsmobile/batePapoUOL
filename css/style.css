@@ -18,14 +18,48 @@ header {
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+header > img.logo {
+    width: 75px;
+    height: 53px;
+}
+
 header > ion-icon {
     font-size: 42px;
 }
 
-main {
+.ctn-messages {
     background-color: #E5E5E5;
     height: calc(100vh - 160px);
     margin: 80px 0;
+    overflow-y: scroll;
+}
+
+.ctn-messages li {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    margin-bottom: 4px;
+    padding: 0px 8px;
+}
+
+.ctn-messages li > span {
+    margin: 10px 0;
+}
+.ctn-messages li span.time {
+    color: #AAAAAA;
+}
+
+.ctn-messages li.status {
+    background-color: #DCDCDC;
+}
+
+.ctn-messages li.message {
+    background-color: #FFFFFF;
+}
+
+.ctn-messages li.private {
+    background-color: #FFDEDE;
 }
 
 .ctn-send-message {
@@ -39,10 +73,6 @@ main {
     align-items: center;
     background-color: #FFFFFF;
     padding: 0px 17px;
-}
-
-input:focus {
-    outline: none;
 }
 
 
@@ -60,16 +90,91 @@ input:focus {
     font-size: 42px;
 }
 
+en {
+    font-weight: bold;
+}
+
+input:focus {
+    outline: none;
+}
+
+section.window-login {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #FFFFFF;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+section.window-login img.logo {
+    position: absolute;
+    top: 72px;
+    width: 130px;
+    height: 92px;
+        
+}
+
+section.window-login div.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+section.window-login div.center input{
+    width: 260px;
+    height: 54px;
+    text-align: center;
+    font-size: 18px;
+    border: 1px solid #D7D7D7;
+}
+
+section.window-login div.center button{
+    width: 109px;
+    height: 45px;
+    margin-top: 15px;
+    border: none;
+    background-color: #E7E7E7;
+    color: #696969;
+    font-size: 18px;
+}
+
+.swipe-left {
+    transition: 1s !important;
+    left: -100vw !important;
+}
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #000000;
     opacity: 1; /* Firefox */
-  }
-  
-  :-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color: #000000;
-  }
-  
-  ::-ms-input-placeholder { /* Microsoft Edge */
-    color: #000000;
-  }
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+color: #000000;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+color: #000000;
+}
+
+
+section.window-login div.center input::placeholder {
+    color: #AEAEAE;
+    opacity: 1; 
+}
+
+section.window-login div.center input::-ms-input-placeholde {
+    color: #AEAEAE;
+}
+
+section.window-login div.center input::-ms-input-placeholder {
+    color: #AEAEAE;
+}
