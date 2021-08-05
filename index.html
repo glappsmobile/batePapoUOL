@@ -26,16 +26,26 @@
 
         <section class="window-login">
             <img src="images/logo.png" class="logo" alt="Logo Bate Papo Uol"/>
+
+
             <div class="center">
-                <input placeholder="Digite seu nome" type="text" maxlength="16"/>
-                <button onclick="joinRoom();"> Entrar </button>
+                <div>
+                    <span class="error"></span>
+                    <input placeholder="Digite seu nome" type="text" maxlength="16"/>
+                </div>
+                <button onclick="joinRoom.attempt();"> Entrar </button>
+                <img src="images/loading.gif" class="loading hidden"/>
             </div>
+       
         </section>
 
         <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="scripts/helpers/array-utils.js"></script>
+        <script src="scripts/helpers/string-utils.js"></script>
+        <script src="scripts/enum.js"></script>
         <script src="scripts/main.js"></script>
+
 
     </body>
 </html>

@@ -126,7 +126,20 @@ section.window-login div.center {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
+}
+
+section.window-login div.center div {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+}
+
+section.window-login div.center span.error{
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: red;
 }
 
 section.window-login div.center input{
@@ -137,7 +150,7 @@ section.window-login div.center input{
     border: 1px solid #D7D7D7;
 }
 
-section.window-login div.center button{
+section.window-login div.center button {
     width: 109px;
     height: 45px;
     margin-top: 15px;
@@ -145,6 +158,23 @@ section.window-login div.center button{
     background-color: #E7E7E7;
     color: #696969;
     font-size: 18px;
+    
+}
+
+section.window-login div.center div.ctn-loading{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+section.window-login div.center img.loading{
+    width: 64px;
+    margin: 20px 0;
+}
+
+.hidden {
+    display: none;
 }
 
 .swipe-left {

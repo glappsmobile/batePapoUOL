@@ -1,22 +1,32 @@
-let user = {};
-const STATUS_SUCCESS = 200;
 const FIVE_SECONDS = 5000;
-const TYPE_STATUS = "status";
-const TYPE_MESSAGE = "message";
-const TYPE_PRIVATE = "private_message";
-const WINDOW_LOGIN = "window-login";
-const WINDOW_CHAT = "window-chat";
-const hiddenMessages = [{type: TYPE_STATUS, hidden: false}, {type: TYPE_MESSAGE, hidden: false}, {type: TYPE_PRIVATE, hidden: false}];
-let curWindow = WINDOW_LOGIN;
+
+let user = {};
+const hiddenMessages = [{type: MESSAGE_TYPE.STATUS, hidden: false}, {type: MESSAGE_TYPE.MESSAGE, hidden: false}, {type: MESSAGE_TYPE.PRIVATE, hidden: false}];
+let curWindow = WINDOW.LOGIN;
 let intervalActive;
+let isLoading = false;
 
 function onLoad(){
     initialConfig();
-    //toggleMessagesVisibility(TYPE_STATUS);
+    //toggleMessagesVisibility(MESSAGE_TYPE.STATUS);
   //  joinRoom("Glauco"); 
     //retrieveMessages();
 }
 
+function loading(booLoading){
+    isLoading = booLoading;
+    let imgLoading;
+    switch (curWindow){
+        case WINDOW.LOGIN:
+            imgLoading = document.querySelector("section.window-login div.center img.loading");
+            if (booLoading){
+                imgLoading.classList.remove("hidden");
+            } else {  
+                imgLoading.classList.add("hidden");
+            }
+            break;
+        }
+}
 
 function initialConfig(){
     const inputMessage = document.querySelector("div.ctn-send-message input");
@@ -36,7 +46,7 @@ function initialConfig(){
         // WHEN "ENTER" KEY RELEASED, DO: 
         if (event.keyCode === 13) {
           event.preventDefault();
-          joinRoom();
+          joinRoom.attempt();
         }
     });
 }
@@ -62,7 +72,7 @@ function renderMessages(messages){
         if (!hiddenMessages[indexType].hidden){
 
             switch (message.type){
-                case TYPE_STATUS:
+                case MESSAGE_TYPE.STATUS:
                     ctnMessages.innerHTML += `
                     <li class="status">
                     <span>
@@ -73,7 +83,7 @@ function renderMessages(messages){
                     </span>
                     </li>`;
                     break;
-                case TYPE_MESSAGE:
+                case MESSAGE_TYPE.MESSAGE:
                     ctnMessages.innerHTML += `
                     <li class="message">
                     <span>
@@ -84,7 +94,7 @@ function renderMessages(messages){
                     </span>
                     </li>`;
                     break;
-                case TYPE_PRIVATE:
+                case MESSAGE_TYPE.PRIVATE:
                     ctnMessages.innerHTML += `
                     <li class="private">
                     <span>
@@ -103,57 +113,81 @@ function renderMessages(messages){
 
     ctnMessages.scrollTop = ctnMessages.scrollHeight;
 
-    if (curWindow === WINDOW_LOGIN){
+    if (curWindow === WINDOW.LOGIN){
         const windowLogin = document.querySelector("section.window-login");
+        const inputName = windowLogin.querySelector("div.ctn-center input");
+        loading(false);
         windowLogin.classList.add("swipe-left");
-        curWindow = WINDOW_CHAT;
+        curWindow = WINDOW.CHAT;
     }
 }
 
+function isValidName(name){
+    let isValid = true;
 
-function joinRoom(){
-    const inputName = document.querySelector("section.window-login div.center input");
+    if (StringUtils.isBlank(name)){ isValid = false }
 
-    user.name = inputName.value;
-    console.log(user.name);
-
-    const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: user.name});
-    promise.then((response) => {
-        const status = response.status;
-
-        switch (status){
-            case STATUS_SUCCESS:
-                console.log(`Joining room as ${user.name}`);
-                getUsers();
-                retrieveMessages();
-                keepActive();
-                break;
-            default:
-                console.error(`Failed to join room as ${user.name}: ${response.statusText}`);
-                console.log(response);
-                user = {};
-                break;
-        }
-    });
+    return isValid;
 }
 
+function treatError (){
+
+}
+
+const joinRoom = {
+    attempt: () => {
+        if (!isLoading){
+            loading(true);
+            const inputName = document.querySelector("section.window-login div.center input");
+            user.name = inputName.value;
+            if (isValidName(user.name)){
+                axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: user.name})
+                .then(joinRoom.success)
+                .catch(joinRoom.error);
+            } else {
+                const error = {response: {status: STATUS_CODE.UNPROCESSABLE_ENTITY}};
+                joinRoom.error(error);
+            }
+        }
+    },
+    success: () => {
+        console.log("SUCCESS");
+        getUsers();
+        retrieveMessages();
+        keepActive();
+    },
+    error: (error) => {
+        console.log("ERROR");
+        const tvError = document.querySelector("section.window-login div.center span.error");
+        const status = error.response.status;
+        const inputName = document.querySelector("section.window-login div.center input");
+        inputName.value = "";
+
+        switch (status){
+            case STATUS_CODE.BAD_REQUEST:
+                console.error(`User ${user.name} already exists.`);
+                tvError.innerHTML = "Nome de usuário já existe.";
+                break;
+            case STATUS_CODE.UNPROCESSABLE_ENTITY:
+                tvError.innerHTML = "Nome de usuário inválido.";
+                break;    
+            default:
+                tvError.innerHTML = "Erro ao entrar, tente novamente.";
+                inputName.value = user.name;
+                break;
+        }
+        user = {};
+        loading(false);
+    }
+}
 
 function keepActive(){
         intervalActive = setInterval(() => {
-        const promiseStatus = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/status", {name: user.name});
-        promiseStatus.then((response) => {
+        axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/status", {name: user.name})
+        .then((response) => {
             const status = response.status;
-
-            switch (status){
-                case STATUS_SUCCESS:
-                    retrieveMessages();
-                    break;
-                default:
-                    console.error(`Failed to keep activity`);
-                    console.error(response);
-                    break;
-            }
-  
+            console.log(status);
+            retrieveMessages();
         });
     }, FIVE_SECONDS);
 }
@@ -166,39 +200,15 @@ function sendMessage(){
 
     const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages", messageObj);
     promise.then((response) => {
-        const status = response.status;
-
-        switch (status){
-                case STATUS_SUCCESS:
-                    console.log(messageObj);
-                    input.value = "";
-                    retrieveMessages();
-                    break;
-                default:
-                    console.error(`Failed to send message`);
-                    console.log(messageObj);
-                    console.error(response);
-                    break;
-        }
+            console.log(messageObj);
+            input.value = "";
+            retrieveMessages();
     });
 }
 
 function getUsers(){
-    const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants");
-    promise.then((response) => {
-        const status = response.status;
-        console.log("Getting online users...");
-
-        switch (status){
-            case STATUS_SUCCESS:
-                console.log(response.data);
-                break;
-            default:
-                console.error(`Failed to join room as ${user.name}: ${response.statusText}`);
-                console.log(response);
-                user = {};
-                break;
-        }
-
+    const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants")
+    .then((response) => {
+        console.log(response.data);
     });
 }
