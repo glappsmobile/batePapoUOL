@@ -5,11 +5,12 @@ const hiddenMessages = [{type: MESSAGE_TYPE.STATUS, hidden: false}, {type: MESSA
 let curWindow = WINDOW.LOGIN;
 let intervalActive;
 let isLoading = false;
+let prevLastMessageTime = "default";
 
 function onLoad(){
     initialConfig();
     //toggleMessagesVisibility(MESSAGE_TYPE.STATUS);
-  //  joinRoom("Glauco"); 
+    //joinRoom("Glauco"); 
     //retrieveMessages();
 }
 
@@ -34,21 +35,8 @@ function initialConfig(){
     
     inputName.focus();
 
-    inputMessage.addEventListener("keyup", function(event) {
-        // WHEN "ENTER" KEY RELEASED, DO: 
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          sendMessage();
-        }
-    });
-
-    inputName.addEventListener("keyup", function(event) {
-        // WHEN "ENTER" KEY RELEASED, DO: 
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          joinRoom.attempt();
-        }
-    });
+    InputUtils.onEnterReleased(sendMessage, inputMessage);
+    InputUtils.onEnterReleased(joinRoom.attempt, inputName);
 }
 
 function toggleMessagesVisibility(type){
@@ -60,17 +48,28 @@ function toggleMessagesVisibility(type){
 
 function retrieveMessages(){
     const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages");
-    promise.then(renderMessages);
+    promise.then( (response) => {
+        const messages = response.data;
+        const lastIndex = (messages.length -1);
+        const curLastMessageTime = messages[lastIndex].time;
+        const hasNewMessages = Boolean(prevLastMessageTime !== curLastMessageTime);
+
+        if (hasNewMessages) {
+            renderMessages(messages);
+            prevLastMessageTime = curLastMessageTime;
+        }
+    });
 }
 
 function renderMessages(messages){
-    messages = messages.data;
     const ctnMessages = document.querySelector("ul.ctn-messages");
+    const prevDistanceFromBottom = ScrollUtils.selectView(ctnMessages).getDistanceFromBottom();
     ctnMessages.innerHTML = "";
     messages.forEach(message => {
         const indexType = ArrayUtils.getIndexByAttr(hiddenMessages, "type", message.type);
-        if (!hiddenMessages[indexType].hidden){
+        const isTypeHidden = hiddenMessages[indexType].hidden;
 
+        if (!isTypeHidden){
             switch (message.type){
                 case MESSAGE_TYPE.STATUS:
                     ctnMessages.innerHTML += `
@@ -105,22 +104,28 @@ function renderMessages(messages){
                     </span>
                     </li>`;
                     break;
-
             }
         }
 
-    });                
+    });       
 
-    ctnMessages.scrollTop = ctnMessages.scrollHeight;
+    const scrollableArea = 200;
+    const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.selectView(ctnMessages).getDistanceFromBottom() >= 0);
 
-    if (curWindow === WINDOW.LOGIN){
-        const windowLogin = document.querySelector("section.window-login");
-        const inputName = windowLogin.querySelector("div.ctn-center input");
+    if (isInScrollableArea) { ScrollUtils.selectView(ctnMessages).scrollToBottom(); }
+
+    if (windows.currentWindow.id === windows.login.id){
+
+        windows.setCurrentWindow(windows.chat.id);
+        const inputName = WINDOW.LOGIN.VIEW.querySelector("div.center input");
+        inputName.blur();
         loading(false);
+        ScrollUtils.selectView(ctnMessages).scrollToBottom();
         windowLogin.classList.add("swipe-left");
         curWindow = WINDOW.CHAT;
     }
 }
+
 
 function isValidName(name){
     let isValid = true;

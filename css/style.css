@@ -45,6 +45,11 @@ header > ion-icon {
 
 .ctn-messages li > span {
     margin: 10px 0;
+    word-wrap: break-word;
+    inline-size: 100%; 
+    line-height: 20px;
+
+
 }
 .ctn-messages li span.time {
     color: #AAAAAA;
