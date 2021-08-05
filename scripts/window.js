@@ -1,14 +1,14 @@
 const windows = {
-    login: {ID: "WINDOW_LOGIN", view: document.querySelector("section.window-login")},
-    chat:  {ID: "WINDOW_CHAT", view: undefined},
+    login: {name: "login", id: "WINDOW_LOGIN", view: document.querySelector("section.window-login")},
+    chat:  {name: "chat", id: "WINDOW_CHAT", view: undefined},
     currentWindow: {},
-    setCurrentWindow: (id) => { 
-        const chosenWindow = this[id];
+    setCurrentWindow: (name) => { 
+        const chosenWindow = windows[name];
 
         if (chosenWindow !== undefined){
-            currentWindow = chosenWindow;
+            windows.currentWindow = chosenWindow;
         } else {
-            console.error(`Window ${id} does not exist.`)
+            console.error(`Window ${name} does not exist.`)
         }
     }
 }

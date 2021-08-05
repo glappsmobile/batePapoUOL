@@ -10,7 +10,3 @@ const MESSAGE_TYPE = {
     PRIVATE: "private_message"
 }
 
-const WINDOW = {
-    LOGIN: "window-login",
-    CHAT: "window-chat"
-}

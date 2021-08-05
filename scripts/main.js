@@ -2,7 +2,12 @@ const FIVE_SECONDS = 5000;
 
 let user = {};
 const hiddenMessages = [{type: MESSAGE_TYPE.STATUS, hidden: false}, {type: MESSAGE_TYPE.MESSAGE, hidden: false}, {type: MESSAGE_TYPE.PRIVATE, hidden: false}];
-let curWindow = WINDOW.LOGIN;
+const WINDOWS = {
+    LOGIN: "WINDOW_LOGIN",
+    CHAT: "WINDOW_CHAT",
+    CURRENT: ""
+}
+    
 let intervalActive;
 let isLoading = false;
 let prevLastMessageTime = "default";
@@ -15,18 +20,17 @@ function onLoad(){
 }
 
 function loading(booLoading){
+    WINDOWS.CURRENT = WINDOWS.LOGIN;
     isLoading = booLoading;
     let imgLoading;
-    switch (curWindow){
-        case WINDOW.LOGIN:
-            imgLoading = document.querySelector("section.window-login div.center img.loading");
-            if (booLoading){
-                imgLoading.classList.remove("hidden");
-            } else {  
-                imgLoading.classList.add("hidden");
-            }
-            break;
+    if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
+        imgLoading = document.querySelector("section.window-login div.center img.loading");
+        if (booLoading){
+            imgLoading.classList.remove("hidden");
+        } else {  
+            imgLoading.classList.add("hidden");
         }
+    }           
 }
 
 function initialConfig(){
@@ -63,7 +67,6 @@ function retrieveMessages(){
 
 function renderMessages(messages){
     const ctnMessages = document.querySelector("ul.ctn-messages");
-    const prevDistanceFromBottom = ScrollUtils.selectView(ctnMessages).getDistanceFromBottom();
     ctnMessages.innerHTML = "";
     messages.forEach(message => {
         const indexType = ArrayUtils.getIndexByAttr(hiddenMessages, "type", message.type);
@@ -114,15 +117,14 @@ function renderMessages(messages){
 
     if (isInScrollableArea) { ScrollUtils.selectView(ctnMessages).scrollToBottom(); }
 
-    if (windows.currentWindow.id === windows.login.id){
-
-        windows.setCurrentWindow(windows.chat.id);
-        const inputName = WINDOW.LOGIN.VIEW.querySelector("div.center input");
+    if (WINDOWS.CURRENT === WINDOWS.LOGIN){
+        WINDOWS.CURRENT = WINDOWS.CHAT;
+        const vWindowsLogin  = document.querySelector("section.window-login");
+        const inputName = vWindowsLogin.querySelector("div.center input");
         inputName.blur();
         loading(false);
         ScrollUtils.selectView(ctnMessages).scrollToBottom();
-        windowLogin.classList.add("swipe-left");
-        curWindow = WINDOW.CHAT;
+        vWindowsLogin.classList.add("swipe-left");
     }
 }
 
@@ -201,7 +203,7 @@ function keepActive(){
 function sendMessage(){
     const input = document.querySelector("div.ctn-send-message input");
     const message = input.value;
-    const messageObj = {from: user.name, to: "Todos", text:message,  type: "message"}
+    const messageObj = {from: user.name, to: "você", text:message,  type: MESSAGE_TYPE.PRIVATE}
 
     const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages", messageObj);
     promise.then((response) => {
