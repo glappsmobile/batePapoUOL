@@ -203,7 +203,7 @@ function keepActive(){
 function sendMessage(){
     const input = document.querySelector("div.ctn-send-message input");
     const message = input.value;
-    const messageObj = {from: user.name, to: "você", text:message,  type: MESSAGE_TYPE.PRIVATE}
+    const messageObj = {from: user.name, to: "Todos", text:message,  type: MESSAGE_TYPE.MESSAGE}
 
     const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages", messageObj);
     promise.then((response) => {
