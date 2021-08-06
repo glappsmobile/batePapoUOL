@@ -109,13 +109,12 @@ function renderMessages(messages){
                     break;
             }
         }
-
     });       
 
-    const scrollableArea = 200;
-    const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.selectView(ctnMessages).getDistanceFromBottom() >= 0);
+    const scrollableArea = 100;
+    const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.getDistanceFromBottom(ctnMessages) >= 0);
 
-    if (isInScrollableArea) { ScrollUtils.selectView(ctnMessages).scrollToBottom(); }
+    if (isInScrollableArea) { ScrollUtils.scrollToBottom(ctnMessages); }
 
     if (WINDOWS.CURRENT === WINDOWS.LOGIN){
         WINDOWS.CURRENT = WINDOWS.CHAT;
@@ -123,7 +122,7 @@ function renderMessages(messages){
         const inputName = vWindowsLogin.querySelector("div.center input");
         inputName.blur();
         loading(false);
-        ScrollUtils.selectView(ctnMessages).scrollToBottom();
+        ScrollUtils.scrollToBottom(ctnMessages);
         vWindowsLogin.classList.add("swipe-left");
     }
 }
@@ -164,7 +163,6 @@ const joinRoom = {
         keepActive();
     },
     error: (error) => {
-        console.log("ERROR");
         const tvError = document.querySelector("section.window-login div.center span.error");
         const status = error.response.status;
         const inputName = document.querySelector("section.window-login div.center input");

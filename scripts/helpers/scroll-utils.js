@@ -1,18 +1,9 @@
 const ScrollUtils = {
-    selectView: (view) => {
-        return {
-            getDistanceFromBottom: () => {
+            getDistanceFromBottom: (view) => {
                 const distance = view.scrollHeight - view.clientHeight - view.scrollTop;
                 return distance;
             },
-            scrollTo: (position) => {
-                view.scrollTop = position;
-            },
-            scrollToBottom: () => {
+            scrollToBottom: (view) => {
                 view.scrollTop = view.scrollHeight;
-                console.log("SCROLLING TO BOTTOM")
-
             }
-        }
-    }
 }
