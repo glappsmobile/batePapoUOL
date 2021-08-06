@@ -9,4 +9,9 @@ const MESSAGE_TYPE = {
     MESSAGE: "message",
     PRIVATE: "private_message"
 }
-
+const API_BASE_URL = "https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/";
+const API_URL = {
+    STATUS: API_BASE_URL + "status",
+    MESSAGES: API_BASE_URL + "messages",
+    PARTICIPANTS: API_BASE_URL + "participants",
+}

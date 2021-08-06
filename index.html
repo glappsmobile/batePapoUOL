@@ -17,9 +17,9 @@
             <ion-icon name="people"></ion-icon>
         </header>
 
-        <ul class="ctn-messages"></ul>
+        <ul class="container-messages"></ul>
 
-        <div class="ctn-send-message">
+        <div class="container-send-message">
             <input placeholder="Escreva aqui..." type="text" />
             <ion-icon name="paper-plane-outline" onclick="sendMessage()"></ion-icon>
         </div>
@@ -33,7 +33,7 @@
                     <span class="error"></span>
                     <input placeholder="Digite seu nome" type="text" maxlength="16"/>
                 </div>
-                <button onclick="joinRoom.attempt();"> Entrar </button>
+                <button onclick="joinRoom();"> Entrar </button>
                 <img src="images/loading.gif" class="loading hidden"/>
             </div>
        
@@ -45,7 +45,6 @@
         <script src="scripts/helpers/string-utils.js"></script>
         <script src="scripts/helpers/input-utils.js"></script>
         <script src="scripts/helpers/scroll-utils.js"></script>
-        <script src="scripts/window.js"></script>
         <script src="scripts/enum.js"></script>
         <script src="scripts/main.js"></script>
 

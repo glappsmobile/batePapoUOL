@@ -5,5 +5,8 @@ const StringUtils = {
         } else {
             return false;
         }
+    },
+    removeAllTags: (string) => {
+        return string.replace(/<[^>]*>/g, '');
     }
 }

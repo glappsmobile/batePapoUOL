@@ -1,16 +1,20 @@
-const FIVE_SECONDS = 5000;
-
 let user = {};
-const hiddenMessages = [{type: MESSAGE_TYPE.STATUS, hidden: false}, {type: MESSAGE_TYPE.MESSAGE, hidden: false}, {type: MESSAGE_TYPE.PRIVATE, hidden: false}];
+const hiddenMessages = [
+    {type: MESSAGE_TYPE.STATUS,  hidden: false},
+    {type: MESSAGE_TYPE.MESSAGE, hidden: false},
+    {type: MESSAGE_TYPE.PRIVATE, hidden: false}
+];
+
 const WINDOWS = {
     LOGIN: "WINDOW_LOGIN",
     CHAT: "WINDOW_CHAT",
     CURRENT: ""
 }
     
-let intervalActive;
+let intervalKeepActive;
+let intervalUpdateMessages;
 let isLoading = false;
-let prevLastMessageTime = "default";
+let prevLastMessageTime = "undefined";
 
 function onLoad(){
     initialConfig();
@@ -22,6 +26,7 @@ function onLoad(){
 function loading(booLoading){
     WINDOWS.CURRENT = WINDOWS.LOGIN;
     isLoading = booLoading;
+
     let imgLoading;
     if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
         imgLoading = document.querySelector("section.window-login div.center img.loading");
@@ -30,17 +35,18 @@ function loading(booLoading){
         } else {  
             imgLoading.classList.add("hidden");
         }
-    }           
+    }
 }
 
 function initialConfig(){
-    const inputMessage = document.querySelector("div.ctn-send-message input");
+    const inputMessage = document.querySelector("div.container-send-message input");
     const inputName = document.querySelector("section.window-login div.center input");
     
     inputName.focus();
 
     InputUtils.onEnterReleased(sendMessage, inputMessage);
-    InputUtils.onEnterReleased(joinRoom.attempt, inputName);
+    InputUtils.onEnterReleased(joinRoom, inputName);
+
 }
 
 function toggleMessagesVisibility(type){
@@ -51,162 +57,158 @@ function toggleMessagesVisibility(type){
 }
 
 function retrieveMessages(){
-    const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages");
-    promise.then( (response) => {
-        const messages = response.data;
-        const lastIndex = (messages.length -1);
-        const curLastMessageTime = messages[lastIndex].time;
-        const hasNewMessages = Boolean(prevLastMessageTime !== curLastMessageTime);
+    console.log("retrieveMessages");
 
-        if (hasNewMessages) {
-            renderMessages(messages);
-            prevLastMessageTime = curLastMessageTime;
-        }
-    });
+    axios.get(API_URL.MESSAGES)
+    .then(retrieveMessagesSuccess);
+}
+
+function retrieveMessagesSuccess(response){
+    const messages = response.data;
+    const curLastMessageTime = messages[messages.length - 1].time;
+    if (prevLastMessageTime !== curLastMessageTime) {
+        renderMessages(messages);
+        prevLastMessageTime = curLastMessageTime;
+    }
 }
 
 function renderMessages(messages){
-    const ctnMessages = document.querySelector("ul.ctn-messages");
-    ctnMessages.innerHTML = "";
+    const containerMessages = document.querySelector("ul.container-messages");
+    containerMessages.innerHTML = "";
+
     messages.forEach(message => {
         const indexType = ArrayUtils.getIndexByAttr(hiddenMessages, "type", message.type);
         const isTypeHidden = hiddenMessages[indexType].hidden;
 
         if (!isTypeHidden){
-            switch (message.type){
-                case MESSAGE_TYPE.STATUS:
-                    ctnMessages.innerHTML += `
-                    <li class="status">
-                    <span>
-                    <span class="time">(${message.time})</span>
-                    <span>&#160;</span>
-                    <span class="from">${message.from}</span>
-                    <span class="text">${message.text}</span>
-                    </span>
-                    </li>`;
-                    break;
-                case MESSAGE_TYPE.MESSAGE:
-                    ctnMessages.innerHTML += `
-                    <li class="message">
-                    <span>
-                    <span class="time">(${message.time})</span>
-                    <span>&#160;</span>
-                    <span class="from"><en>${message.from}</en> para <en>${message.to}</en>: </span>
-                    <span class="text">${message.text}</span>
-                    </span>
-                    </li>`;
-                    break;
-                case MESSAGE_TYPE.PRIVATE:
-                    ctnMessages.innerHTML += `
-                    <li class="private">
-                    <span>
-                    <span class="time">(${message.time})</span>
-                    <span>&#160;</span>
-                    <span class="from"><en>${message.from}</en> reservadamente para <en>${message.to}</en>: </span>
-                    <span class="text">${message.text}</span>
-                    </span>
-                    </li>`;
-                    break;
+            if (message.type === MESSAGE_TYPE.STATUS){
+                containerMessages.innerHTML += `
+                <li class="status">
+                <span>
+                <span class="time">(${message.time})</span>
+                <span>&#160;</span>
+                <span class="from">${message.from}</span>
+                <span class="text">${message.text}</span>
+                </span>
+                </li>`;
+            } 
+        
+            if (message.type === MESSAGE_TYPE.MESSAGE){
+                containerMessages.innerHTML += `
+                <li class="message">
+                <span>
+                <span class="time">(${message.time})</span>
+                <span>&#160;</span>
+                <span class="from"><en>${message.from}</en> para <en>${message.to}</en>: </span>
+                <span class="text">${message.text}</span>
+                </span>
+                </li>`;
+            } 
+
+            if (message.type === MESSAGE_TYPE.PRIVATE){
+                containerMessages.innerHTML += `
+                <li class="private">
+                <span>
+                <span class="time">(${message.time})</span>
+                <span>&#160;</span>
+                <span class="from"><en>${message.from}</en> reservadamente para <en>${message.to}</en>: </span>
+                <span class="text">${message.text}</span>
+                </span>
+                </li>`;
             }
         }
     });       
 
     const scrollableArea = 100;
-    const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.getDistanceFromBottom(ctnMessages) >= 0);
+    const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.getDistanceFromBottom(containerMessages) >= 0);
 
-    if (isInScrollableArea) { ScrollUtils.scrollToBottom(ctnMessages); }
+    if (isInScrollableArea) { ScrollUtils.scrollToBottom(containerMessages); }
 
     if (WINDOWS.CURRENT === WINDOWS.LOGIN){
         WINDOWS.CURRENT = WINDOWS.CHAT;
-        const vWindowsLogin  = document.querySelector("section.window-login");
-        const inputName = vWindowsLogin.querySelector("div.center input");
+        const viewWindowsLogin  = document.querySelector("section.window-login");
+        const inputName = viewWindowsLogin.querySelector("div.center input");
         inputName.blur();
         loading(false);
-        ScrollUtils.scrollToBottom(ctnMessages);
-        vWindowsLogin.classList.add("swipe-left");
+        ScrollUtils.scrollToBottom(containerMessages);
+        viewWindowsLogin.classList.add("swipe-left");
     }
 }
 
+function treatText(text){
+    let treatedText = StringUtils.removeAllTags(text);
 
-function isValidName(name){
-    let isValid = true;
-
-    if (StringUtils.isBlank(name)){ isValid = false }
-
-    return isValid;
+    return treatedText;
 }
 
-function treatError (){
-
-}
-
-const joinRoom = {
-    attempt: () => {
-        if (!isLoading){
-            loading(true);
-            const inputName = document.querySelector("section.window-login div.center input");
-            user.name = inputName.value;
-            if (isValidName(user.name)){
-                axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: user.name})
-                .then(joinRoom.success)
-                .catch(joinRoom.error);
-            } else {
-                const error = {response: {status: STATUS_CODE.UNPROCESSABLE_ENTITY}};
-                joinRoom.error(error);
-            }
-        }
-    },
-    success: () => {
-        console.log("SUCCESS");
-        getUsers();
-        retrieveMessages();
-        keepActive();
-    },
-    error: (error) => {
-        const tvError = document.querySelector("section.window-login div.center span.error");
-        const status = error.response.status;
+function joinRoom(){
+    console.log("joinRoom");
+    if (!isLoading){
+        loading(true);
         const inputName = document.querySelector("section.window-login div.center input");
-        inputName.value = "";
-
-        switch (status){
-            case STATUS_CODE.BAD_REQUEST:
-                console.error(`User ${user.name} already exists.`);
-                tvError.innerHTML = "Nome de usuário já existe.";
-                break;
-            case STATUS_CODE.UNPROCESSABLE_ENTITY:
-                tvError.innerHTML = "Nome de usuário inválido.";
-                break;    
-            default:
-                tvError.innerHTML = "Erro ao entrar, tente novamente.";
-                inputName.value = user.name;
-                break;
+        inputName.value = treatText(inputName.value);
+        user.name = inputName.value;
+ 
+        if (!StringUtils.isBlank(user.name)){
+            axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: user.name})
+            .then(joinRoomSuccess)
+            .catch(joinRoomError);
+        } else {
+            const error = {response: {status: STATUS_CODE.UNPROCESSABLE_ENTITY}};
+            joinRoomError(error);
         }
-        user = {};
-        loading(false);
     }
+}
+
+function joinRoomSuccess(){
+    intervalUpdateMessages = setInterval(retrieveMessages, 3000);
+    getUsers();
+    retrieveMessages();
+    keepActive();
+}
+
+function joinRoomError(error){
+    const tvError = document.querySelector("section.window-login div.center span.error");
+    const status = error.response.status;
+    const inputName = document.querySelector("section.window-login div.center input");
+    inputName.value = "";
+
+    switch (status){
+        case STATUS_CODE.BAD_REQUEST:
+            tvError.innerHTML = "Nome de usuário inválido ou já existe.";
+            break;
+        case STATUS_CODE.UNPROCESSABLE_ENTITY:
+            tvError.innerHTML = "Nome de usuário inválido.";
+            break;    
+        default:
+            tvError.innerHTML = "Erro ao entrar, tente novamente.";
+            inputName.value = user.name;
+            break;
+    }
+
+    user = {};
+    loading(false);
 }
 
 function keepActive(){
-        intervalActive = setInterval(() => {
+        intervalKeepActive = setInterval(() => {
         axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/status", {name: user.name})
-        .then((response) => {
-            const status = response.status;
-            console.log(status);
-            retrieveMessages();
-        });
-    }, FIVE_SECONDS);
+        .catch((error => {console.error("Erro ao manter atividade" + error.response.statusText)}));
+    }, 5000);
 }
 
-
 function sendMessage(){
-    const input = document.querySelector("div.ctn-send-message input");
-    const message = input.value;
+    const inputMessage = document.querySelector("div.container-send-message input");
+    inputMessage.value = treatText(inputMessage.value);
+    
+    const message = inputMessage.value;
+
     const messageObj = {from: user.name, to: "Todos", text:message,  type: MESSAGE_TYPE.MESSAGE}
 
     const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages", messageObj);
     promise.then((response) => {
             console.log(messageObj);
-            input.value = "";
+            inputMessage.value = "";
             retrieveMessages();
     });
 }

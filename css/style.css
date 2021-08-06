@@ -27,14 +27,14 @@ header > ion-icon {
     font-size: 42px;
 }
 
-.ctn-messages {
+.container-messages {
     background-color: #E5E5E5;
     height: calc(100vh - 160px);
     margin: 80px 0;
     overflow-y: scroll;
 }
 
-.ctn-messages li {
+.container-messages li {
     display: flex;
     align-items: center;
     width: 100%;
@@ -43,7 +43,7 @@ header > ion-icon {
     padding: 0px 8px;
 }
 
-.ctn-messages li > span {
+.container-messages li > span {
     margin: 10px 0;
     word-wrap: break-word;
     inline-size: 100%; 
@@ -51,23 +51,23 @@ header > ion-icon {
 
 
 }
-.ctn-messages li span.time {
+.container-messages li span.time {
     color: #AAAAAA;
 }
 
-.ctn-messages li.status {
+.container-messages li.status {
     background-color: #DCDCDC;
 }
 
-.ctn-messages li.message {
+.container-messages li.message {
     background-color: #FFFFFF;
 }
 
-.ctn-messages li.private {
+.container-messages li.private {
     background-color: #FFDEDE;
 }
 
-.ctn-send-message {
+.container-send-message {
     position: fixed;
     z-index: 1;
     bottom: 0;
@@ -81,7 +81,7 @@ header > ion-icon {
 }
 
 
-.ctn-send-message > input {
+.container-send-message > input {
     width: 90%;
     height: 70%;
     border: none;
@@ -90,7 +90,7 @@ header > ion-icon {
     padding-left: 10px;
 }
 
-.ctn-send-message > ion-icon {
+.container-send-message > ion-icon {
     width: 10%;
     font-size: 42px;
 }
@@ -166,7 +166,7 @@ section.window-login div.center button {
     
 }
 
-section.window-login div.center div.ctn-loading{
+section.window-login div.center div.container-loading{
     display: flex;
     flex-direction: column;
     justify-content: center;
