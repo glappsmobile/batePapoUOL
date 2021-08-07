@@ -7,7 +7,7 @@
 const TO_ALL = "Todos";
 
 let thisUser = {};
-let users = {};
+let onlineUsers = [];
 let thisMessage = {type: MESSAGE_TYPE.MESSAGE, to: TO_ALL};
 
 const hiddenMessages = [
@@ -43,7 +43,6 @@ function onLoad(){
 function loading(booLoading){
     WINDOWS.CURRENT = WINDOWS.LOGIN;
     isLoading = booLoading;
-    setPrivacy(false);
     let imgLoading;
     if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
         imgLoading = document.querySelector("section.window-login div.center img.loading");
@@ -157,7 +156,12 @@ function treatText(text){
 }
 
 function joinRoomSuccess(){
-    intervalUpdateMessages = setInterval(retrieveMessages, 3000);
+    intervalUpdateMessages = 
+    setInterval( () => {
+        retrieveMessages();
+        getUsers();
+    }, 3000);
+
     getUsers();
     retrieveMessages();
     keepActive();
@@ -253,16 +257,23 @@ function renderUsers(users) {
         <ion-icon name="checkmark" class="checkmark"></ion-icon>
     </li>`;
 
-    users.forEach((user) => {
-        listUsers.innerHTML += `
-        <li class="user" onclick="toggleSelectedUser(this)">
-            <div>
-                <ion-icon name="person-circle" class="list-icon"></ion-icon>
-                <span class="name">${user.name}</span>
-            </div>
-            <ion-icon name="checkmark" class="checkmark"></ion-icon>
-        </li>`;
-    })
+    users.forEach((user, i) => {
+        if (user.name !== thisUser.name){
+
+            listUsers.innerHTML += `
+            <li class="user" id="user-${i}" onclick="toggleSelectedUser(this)">
+                <div>
+                    <ion-icon name="person-circle" class="list-icon"></ion-icon>
+                    <span class="name">${user.name}</span>
+                </div>
+                <ion-icon name="checkmark" class="checkmark"></ion-icon>
+            </li>`;
+        }
+    });
+
+    const lastSelectedIndex = ArrayUtils.getIndexByAttr(users, "name", thisMessage.to);
+    const lastSelectedView = listUsers.querySelector(`.user#user-${lastSelectedIndex}`)
+    toggleSelectedUser(lastSelectedView);
 }
 
 function toggleMenuRight(){
@@ -286,23 +297,38 @@ function setPrivacy(isPrivate){
     }
 
     if (thisMessage.to === TO_ALL){
-        optionPrivate.classList.add("disabled")
+        optionPrivate.classList.add("disabled");
     } else {
-        optionPrivate.classList.remove("disabled")
+        optionPrivate.classList.remove("disabled");
     }
+
+    updateSpanTo();
+}
+
+function updateSpanTo(){
+    const spanTo = document.querySelector(".container-send-message span#to");
+
+    if (thisMessage.to === TO_ALL){
+        spanTo.innerHTML = "";
+    } else {
+
+        spanTo.innerHTML = `Enviando para ${thisMessage.to}`;
+        if (thisMessage.type === MESSAGE_TYPE.PRIVATE){
+            spanTo.innerHTML += " (reservadamente)";
+        }
+    }
+
 }
 
 
-function toggleSelectedUser(user){
+function toggleSelectedUser(user) {
     const lastSelectedUser = document.querySelector("ul.users li.user.selected");
     const allUsers = document.querySelector("ul.users li.user:first-child");
-
-    thisMessage.to = TO_ALL;
 
     if (lastSelectedUser !== null && lastSelectedUser !== user) { 
         lastSelectedUser.classList.remove("selected"); 
     }
-
+    
     if (user !== null) { 
         user.classList.toggle("selected");
 
@@ -311,16 +337,21 @@ function toggleSelectedUser(user){
             thisMessage.to = userName;
         } else {
             setPrivacy(false);
+            thisMessage.to = TO_ALL;
             allUsers.classList.add("selected");
         }
 
     } else {
+        console.log("USUARIO NULO 1")
         setPrivacy(false);
+        thisMessage.to = TO_ALL;
         allUsers.classList.add("selected");
     }
 
     //FORCE CHECK IF PRIVATE OPTION SHOULD BE ENABLED OR DISABLED;
-    setPrivacy(thisMessage.type === MESSAGE_TYPE.PRIVATE)
+    //RUN updateSpanTo()
+    console.log("SET PRIVACY "+ (thisMessage.type === MESSAGE_TYPE.PRIVATE))
+    setPrivacy(thisMessage.type === MESSAGE_TYPE.PRIVATE);
 }
 
 function toggleOverlay(){
@@ -331,7 +362,10 @@ function toggleOverlay(){
 function getUsers() {
     const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants")
     .then((response) => {
-        renderUsers(response.data)
+        if (!ArrayUtils.isEqual(response.data, onlineUsers)){
+            onlineUsers = response.data;
+            renderUsers(onlineUsers);
+        }
     });
 }
 

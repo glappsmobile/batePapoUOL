@@ -80,18 +80,29 @@ header > ion-icon {
     height: 80px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     background-color: #FFFFFF;
     padding: 0px 17px;
 }
 
-
-.container-send-message > input {
+.container-send-message > div:first-child {
+    height: 100%;
     width: 90%;
-    height: 70%;
+    padding: 10px;
+}
+
+.container-send-message input {
+    height: 60%;
+    width: 100%;
     border: none;
     font-size: 18px;
     color: black;
-    padding-left: 10px;
+    font-style: italic;
+}
+
+.container-send-message span {
+    font-size: 14px;
+    font-weight: lighter;
 }
 
 .container-send-message > ion-icon {
@@ -167,7 +178,6 @@ section.window-login div.center button {
     background-color: #E7E7E7;
     color: #696969;
     font-size: 18px;
-    
 }
 
 section.window-login div.center div.container-loading{
