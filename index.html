@@ -15,7 +15,9 @@
 
         <header>
             <img src="images/logo.png" class="logo" alt="Logo Bate Papo Uol"/>
-            <ion-icon name="people" onclick="toggleMenuRight()"></ion-icon>
+            <ion-button title="Pessoas" onclick="toggleMenuRight()">
+                <ion-icon name="people"></ion-icon>
+            </ion-button>
         </header>
 
         <ul class="container-messages"></ul>
@@ -25,30 +27,21 @@
                 <input placeholder="Escreva aqui..." type="text" />
                 <span id="to"></span>
             </div>
-            <ion-icon name="paper-plane-outline" onclick="sendMessage()"></ion-icon>
+            <ion-button title="Enviar mensagem" onclick="sendMessage()" class="button-send">
+                <ion-icon name="paper-plane-outline"></ion-icon>
+            </ion-button>
         </div>
 
-        <section class="window-login">
-            <img src="images/logo.png" class="logo" alt="Logo Bate Papo Uol"/>
-
-
-            <div class="center">
-                <div>
-                    <span class="error"></span>
-                    <input placeholder="Digite seu nome" type="text" maxlength="16"/>
-                </div>
-                <button onclick="joinRoom();"> Entrar </button>
-                <img src="images/loading.gif" class="loading hidden"/>
-            </div>
-       
-        </section>
-
         <aside class="menu-right">
+
                 <span><strong>Escolha um dos contatos para enviar mensagem:</strong></span>
+
                 <ul class="users"></ul>
 
                 <span><strong>Escolha a visibilidade:</strong></span>
+
                 <ul class="privacy">
+
                     <li onclick="setPrivacy(false)" class="selected" id="public">
                         <div>
                             <ion-icon name="lock-open" class="list-icon"></ion-icon>
@@ -67,7 +60,20 @@
 
                 </ul>
         </aside>
+
         <div class="overlay" onclick="toggleMenuRight()"></div> 
+
+        <section class="window-login">
+            <img src="images/logo.png" class="logo" alt="Logo Bate Papo Uol"/>
+            <div class="center">
+                <div>
+                    <span class="error"></span>
+                    <input placeholder="Digite seu nome" type="text" maxlength="90"/>
+                </div>
+                <button onclick="joinRoom();" class="button-join"> Entrar </button>
+                <img src="images/loading.gif" class="loading hidden"/>
+            </div>
+        </section>
 
 
         <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
@@ -76,6 +82,7 @@
         <script src="scripts/helpers/string-utils.js"></script>
         <script src="scripts/helpers/input-utils.js"></script>
         <script src="scripts/helpers/scroll-utils.js"></script>
+        <script src="scripts/helpers/object-utils.js"></script>
         <script src="scripts/enum.js"></script>
         <script src="scripts/main.js"></script>
     </body>

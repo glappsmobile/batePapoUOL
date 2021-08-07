@@ -6,6 +6,14 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+ion-icon {
+    pointer-events: none;
+}
+
+input:disabled {
+    color: gray !important;
+}
+
 header {
     position: fixed;
     z-index: 1;
@@ -27,7 +35,7 @@ header > img.logo {
     height: 53px;
 }
 
-header > ion-icon {
+header > ion-button {
     font-size: 42px;
 }
 
@@ -52,9 +60,8 @@ header > ion-icon {
     word-wrap: break-word;
     inline-size: 100%; 
     line-height: 20px;
-
-
 }
+
 .container-messages li span.time {
     color: #AAAAAA;
 }
@@ -97,7 +104,6 @@ header > ion-icon {
     border: none;
     font-size: 18px;
     color: black;
-    font-style: italic;
 }
 
 .container-send-message span {
@@ -105,7 +111,7 @@ header > ion-icon {
     font-weight: lighter;
 }
 
-.container-send-message > ion-icon {
+.container-send-message ion-button {
     width: 10%;
     font-size: 42px;
 }
@@ -277,6 +283,17 @@ aside.menu-right > ul li.disabled {
     pointer-events: none;
 }
 
+ion-button.disabled {
+    color:gray;
+    pointer-events: none;
+}
+
+button.disabled {
+    color:gray;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
 aside.menu-right > ul li div:first-child {
     height: 36px;
     display: flex;
@@ -295,14 +312,17 @@ strong {
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
     color: #000000;
     opacity: 1; /* Firefox */
+    font-style: italic;
 }
 
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
 color: #000000;
+font-style: italic;
 }
 
 ::-ms-input-placeholder { /* Microsoft Edge */
 color: #000000;
+font-style: italic;
 }
 
 section.window-login div.center input::placeholder {

@@ -1,14 +1,20 @@
 /* TODO:
-*   
-*
-*
+*   user name too big on list
+*   user name too big on spanto
+*   freeze some arrays
+*   img loading not move butto nand input
+*   multiline user name deceasing icon
+*   disable join button if invalid
+*  melhorar nome dos inputs e buttons
 */
 
-const TO_ALL = "Todos";
+const TO_ALL_USERS = "TO_ALL_USERS_USERS";
+const KEY_TODOS = "Todos"
 
-let thisUser = {};
-let onlineUsers = [];
-let thisMessage = {type: MESSAGE_TYPE.MESSAGE, to: TO_ALL};
+const CONFIG = {
+    MAX_RETRIES: 3,
+    DELAY_RETRY: 1000
+}
 
 const hiddenMessages = [
     {type: MESSAGE_TYPE.STATUS,  hidden: false},
@@ -19,13 +25,20 @@ const hiddenMessages = [
 const WINDOWS = {
     LOGIN: "WINDOW_LOGIN",
     CHAT: "WINDOW_CHAT",
-    CURRENT: ""
+    CURRENT: "WINDOW_LOGIN"
 }
-    
-let intervalKeepActive;
-let intervalUpdateMessages;
+
+let onlineUsers = [];
+let intervals = [];
+let buttonsState = [
+    {name: "join", state: false},
+    {name: "send", state: false}
+];
+
+let thisUser = {};
+let thisMessage = {type: MESSAGE_TYPE.MESSAGE, to: null, retries: 0};
+let previousLastMessage = {time: undefined, text: undefined, status: undefined}
 let isLoading = false;
-let prevLastMessageTime = "undefined";
 
 function onLoad(){
     initialConfig();
@@ -35,21 +48,91 @@ function onLoad(){
    // joinRoom(); 
     //retrieveMessages();
 
+
   /*  const viewWindowsLogin  = document.querySelector("section.window-login");
   
     viewWindowsLogin.classList.add("swipe-left");*/
 }
 
+function isValidTex(text){
+    let treatedText = treatText(text);
+
+    if (StringUtils.isBlank(treatedText)){
+        return false;
+    }
+
+    return true;
+}
+
+function disableButtonAndInput(doDisableButton, doDisableInput){
+    let input;
+    let button;
+    let buttonStateIndex;
+
+    if (WINDOWS.CURRENT === WINDOWS.LOGIN){
+        button = document.querySelector(".window-login .button-join");
+        input = document.querySelector("section.window-login div.center input");
+        buttonStateIndex = 0;
+    } 
+    else if (WINDOWS.CURRENT === WINDOWS.CHAT) {
+        button = document.querySelector(".container-send-message .button-send");
+        input = document.querySelector("div.container-send-message input");
+        buttonStateIndex = 1;
+        console.log("chat")
+    }
+
+    console.log(`Button ${buttonsState[buttonStateIndex].name} State: ${buttonsState[buttonStateIndex].state}`);
+
+    switch (doDisableButton){
+        case 0:
+            button.classList.remove("disabled");
+            buttonsState[buttonStateIndex].state = false;
+            break;
+        
+        case 1:
+            button.classList.add("disabled");
+            buttonsState[buttonStateIndex].state = true;
+            break;
+        
+        case 2:
+            if (isValidTex(input.value)){
+                button.classList.remove("disabled");
+                buttonsState[buttonStateIndex].state = false;
+            } else {
+                button.classList.add("disabled");
+                buttonsState[buttonStateIndex].state = true;
+            }
+            break;
+    }
+
+    if (doDisableInput){
+        input.disabled = true;
+    } else {  
+        input.disabled = false;
+    }
+    
+}
+
+
 function loading(booLoading){
-    WINDOWS.CURRENT = WINDOWS.LOGIN;
     isLoading = booLoading;
-    let imgLoading;
+    
+
     if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
-        imgLoading = document.querySelector("section.window-login div.center img.loading");
+        const imgLoading = document.querySelector("section.window-login div.center img.loading");
         if (booLoading){
             imgLoading.classList.remove("hidden");
         } else {  
             imgLoading.classList.add("hidden");
+        }
+    }
+
+    if (WINDOWS.CURRENT === WINDOWS.LOGIN){
+
+        if (booLoading){
+            disableButtonAndInput(1, 1);
+        } else {
+            disableButtonAndInput(2, false);
         }
     }
 }
@@ -57,12 +140,35 @@ function loading(booLoading){
 function initialConfig(){
     const inputMessage = document.querySelector("div.container-send-message input");
     const inputName = document.querySelector("section.window-login div.center input");
-    
+    disableButtonAndInput(1, 0);
+
     inputName.focus();
 
-    InputUtils.onEnterReleased(sendMessage, inputMessage);
-    InputUtils.onEnterReleased(joinRoom, inputName);
+    inputName.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            if (!buttonsState[0].state) { joinRoom(); }
+        }
 
+        disableButtonAndInput(2, false);
+    });
+
+    inputMessage.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            if (!buttonsState[1].state) { sendMessage(); }
+        }
+
+        disableButtonAndInput(2, false);
+    });
+
+}
+
+function clearAllIntervals(){
+    intervals.forEach( (interval) => {
+        clearInterval(interval.id);
+    });
+    intervals = [];
 }
 
 function toggleMessagesVisibility(type){
@@ -91,6 +197,7 @@ function renderMessages(messages){
                 <span class="text">${message.text}</span>
                 </span>
                 </li>`;
+                return;
             } 
         
             if (message.type === MESSAGE_TYPE.MESSAGE){
@@ -103,6 +210,7 @@ function renderMessages(messages){
                 <span class="text">${message.text}</span>
                 </span>
                 </li>`;
+                return;
             } 
 
             if (message.type === MESSAGE_TYPE.PRIVATE){
@@ -115,6 +223,7 @@ function renderMessages(messages){
                 <span class="text">${message.text}</span>
                 </span>
                 </li>`;
+                return;
             }
         }
     });       
@@ -137,10 +246,11 @@ function renderMessages(messages){
 
 function retrieveMessagesSuccess(response){
     const messages = response.data;
-    const curLastMessageTime = messages[messages.length - 1].time;
-    if (prevLastMessageTime !== curLastMessageTime) {
+    const currentLastMessage = messages[messages.length - 1];
+
+    if (!ObjectUtils.isEqual(currentLastMessage, previousLastMessage)) {
         renderMessages(messages);
-        prevLastMessageTime = curLastMessageTime;
+        previousLastMessage = currentLastMessage;
     }
 }
 
@@ -156,15 +266,17 @@ function treatText(text){
 }
 
 function joinRoomSuccess(){
-    intervalUpdateMessages = 
+    const intervalUpdateDataId = 
     setInterval( () => {
         retrieveMessages();
         getUsers();
     }, 3000);
 
+    intervals.push({nome: "UPDATE_DATA", id: intervalUpdateDataId});
+
     getUsers();
     retrieveMessages();
-    keepActive();
+   // keepActive();
 }
 
 function joinRoomError(error){
@@ -190,17 +302,28 @@ function joinRoomError(error){
     loading(false);
 }
 
-function joinRoom(){
-    console.log("joinRoom");
+function joinRoom(isRejoining){
     if (!isLoading){
+        clearAllIntervals();
+
         loading(true);
-        const inputName = document.querySelector("section.window-login div.center input");
-        inputName.value = treatText(inputName.value);
-        thisUser.name = inputName.value;
- 
+        let funSuccess;
+
+        if (!isRejoining){
+            const inputName = document.querySelector("section.window-login div.center input");
+            inputName.value = treatText(inputName.value);
+            thisUser.name = inputName.value;
+            funSuccess = joinRoomSuccess;
+        } else {
+            funSuccess = () => {
+                sendMessage();
+                joinRoomSuccess();
+            }
+        }
+
         if (!StringUtils.isBlank(thisUser.name)){
             axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: thisUser.name})
-            .then(joinRoomSuccess)
+            .then(funSuccess)
             .catch(joinRoomError);
         } else {
             const error = {response: {status: STATUS_CODE.UNPROCESSABLE_ENTITY}};
@@ -209,27 +332,59 @@ function joinRoom(){
     }
 }
 
+function isUserOnline(){
+    const isUserOnline = (ArrayUtils.getIndexByAttr(onlineUsers, "name", thisUser.name) !== -1);
+
+    return isUserOnline;
+}
+
 function keepActive(){
-        intervalKeepActive = setInterval(() => {
+        const intervalKeepActiveId = setInterval(() => {
         axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/status", {name: thisUser.name})
         .catch((error => {console.error(`Error keeping active: ${error.response.statusText}`)}));
     }, 5000);
+
+    intervals.push({nome: "KEEP_ACTIVE", id: intervalKeepActiveId});
 }
 
 function sendMessageSuccess(response, inputMessage) {
     loading(false);
+    //disableButtonAndInput(true, false);
+    thisMessage.retries = 0;
     inputMessage.value = "";
     retrieveMessages();
 }
 
 function sendMessageError(error, inputMessage){
     loading(false);
-    const status = error.response.status;
-    console.error(`Send message failed: ${error.response.statusText}`);
+    if (isUserOnline()){
+        const status = error.response.status;
+        console.error(`Send message failed: ${error.response.statusText}`);
+        let tryAgain = false;
 
-    if (status === STATUS_CODE.BAD_REQUEST){
-        alert("Mensagem inválida!");
-        inputMessage.value = "";
+        if (status === STATUS_CODE.BAD_REQUEST){
+            tryAgain = true;            
+        }
+
+        if (tryAgain){
+    
+            if(thisMessage.retries > CONFIG.MAX_RETRIES){
+                alert("Mensagem inválida!");
+                inputMessage.value = "";
+            } else {
+                loading(true)
+                thisMessage.retries++;
+                setTimeout(sendMessage, CONFIG.DELAY_RETRY);
+            }
+
+        } else {
+            alert("Mensagem inválida!");
+            inputMessage.value = "";
+        }
+
+    } else if (!isUserOnline()){
+        //REJOIN THE ROOM
+        joinRoom(true);
     }
 }
 
@@ -238,8 +393,13 @@ function sendMessage(){
     const inputMessage = document.querySelector("div.container-send-message input");
     inputMessage.value = treatText(inputMessage.value);
     const messageText = inputMessage.value;
+    let addresse = thisMessage.to;
 
-    const message = {from: thisUser.name, to: thisMessage.to, text: messageText,  type: thisMessage.type}
+    if (thisMessage.to === TO_ALL_USERS) {
+        addresse = "Todos";
+    }
+
+    const message = {from: thisUser.name, to: addresse, text: messageText,  type: thisMessage.type}
 
     axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages", message)
     .then ( (response)  =>  sendMessageSuccess(response, inputMessage))
@@ -271,9 +431,16 @@ function renderUsers(users) {
         }
     });
 
+    //SELECT USER AGAIN AFTER RE-RENDERING USER LIST
     const lastSelectedIndex = ArrayUtils.getIndexByAttr(users, "name", thisMessage.to);
-    const lastSelectedView = listUsers.querySelector(`.user#user-${lastSelectedIndex}`)
-    toggleSelectedUser(lastSelectedView);
+    const lastSelectedUser= listUsers.querySelector(`.user#user-${lastSelectedIndex}`);
+    const isPrivateUserLoggedOut = thisMessage.to !== TO_ALL_USERS && thisMessage.type === MESSAGE_TYPE.PRIVATE && lastSelectedIndex === -1;
+    
+    if (isPrivateUserLoggedOut){
+        alert(`${thisMessage.to} saiu da sala.\nVisibilidade da mensagem alterada para: Público.`);
+    }
+
+    toggleSelectedUser(lastSelectedUser);
 }
 
 function toggleMenuRight(){
@@ -286,7 +453,7 @@ function setPrivacy(isPrivate){
     const optionPrivate = document.querySelector("ul.privacy li#private");
     const optionPublic = document.querySelector("ul.privacy li#public");
 
-    if (isPrivate && thisMessage.to !== TO_ALL){
+    if (isPrivate && thisMessage.to !== TO_ALL_USERS && thisMessage.to !== KEY_TODOS){
         optionPrivate.classList.add("selected");
         optionPublic.classList.remove("selected");
         thisMessage.type = MESSAGE_TYPE.PRIVATE;
@@ -296,7 +463,7 @@ function setPrivacy(isPrivate){
         thisMessage.type = MESSAGE_TYPE.MESSAGE;
     }
 
-    if (thisMessage.to === TO_ALL){
+    if (thisMessage.to === TO_ALL_USERS || thisMessage.to === KEY_TODOS){
         optionPrivate.classList.add("disabled");
     } else {
         optionPrivate.classList.remove("disabled");
@@ -308,16 +475,14 @@ function setPrivacy(isPrivate){
 function updateSpanTo(){
     const spanTo = document.querySelector(".container-send-message span#to");
 
-    if (thisMessage.to === TO_ALL){
+    if (thisMessage.to === TO_ALL_USERS || thisMessage.to === KEY_TODOS){
         spanTo.innerHTML = "";
     } else {
-
         spanTo.innerHTML = `Enviando para ${thisMessage.to}`;
         if (thisMessage.type === MESSAGE_TYPE.PRIVATE){
             spanTo.innerHTML += " (reservadamente)";
         }
     }
-
 }
 
 
@@ -337,20 +502,18 @@ function toggleSelectedUser(user) {
             thisMessage.to = userName;
         } else {
             setPrivacy(false);
-            thisMessage.to = TO_ALL;
+            thisMessage.to = TO_ALL_USERS;
             allUsers.classList.add("selected");
         }
 
     } else {
-        console.log("USUARIO NULO 1")
         setPrivacy(false);
-        thisMessage.to = TO_ALL;
+        thisMessage.to = TO_ALL_USERS;
         allUsers.classList.add("selected");
     }
 
-    //FORCE CHECK IF PRIVATE OPTION SHOULD BE ENABLED OR DISABLED;
+    //FORCE CHECK IF PRIVATE SHOULD BE ENABLED OR DISABLED;
     //RUN updateSpanTo()
-    console.log("SET PRIVACY "+ (thisMessage.type === MESSAGE_TYPE.PRIVATE))
     setPrivacy(thisMessage.type === MESSAGE_TYPE.PRIVATE);
 }
 
