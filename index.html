@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="css/reset.css" />
         <link rel="stylesheet" href="css/style.css" />
         <link rel="icon" type="image/png" href="https://www.google.com/s2/u/0/favicons?domain=batepapo.uol.com.br">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;400&display=swap" rel="stylesheet">
 
 
         <title> BATE PAPO UOL </title>
@@ -14,7 +15,7 @@
 
         <header>
             <img src="images/logo.png" class="logo" alt="Logo Bate Papo Uol"/>
-            <ion-icon name="people"></ion-icon>
+            <ion-icon name="people" onclick="toggleMenuRight()"></ion-icon>
         </header>
 
         <ul class="container-messages"></ul>
@@ -39,6 +40,33 @@
        
         </section>
 
+        <aside class="menu-right">
+                <span><strong>Escolha um dos contatos para enviar mensagem:</strong></span>
+                <ul class="users"></ul>
+
+                <span><strong>Escolha a visibilidade:</strong></span>
+                <ul class="privacy">
+                    <li onclick="setPrivacy(false)" class="selected" id="public">
+                        <div>
+                            <ion-icon name="lock-open" class="list-icon"></ion-icon>
+                            <span>Público</span>
+                        </div>
+                        <ion-icon name="checkmark" class="checkmark"></ion-icon>
+                    </li>
+
+                    <li onclick="setPrivacy(true)" id="private">
+                        <div>
+                            <ion-icon name="lock-closed" class="list-icon"></ion-icon>
+                            <span>Reservadamente</span>
+                        </div>
+                        <ion-icon name="checkmark" class="checkmark"></ion-icon>
+                    </li>
+
+                </ul>
+        </aside>
+        <div class="overlay" onclick="toggleMenuRight()"></div> 
+
+
         <script type="module" src="https://unpkg.com/ionicons@5.4.0/dist/ionicons/ionicons.esm.js"></script>
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
         <script src="scripts/helpers/array-utils.js"></script>
@@ -47,7 +75,5 @@
         <script src="scripts/helpers/scroll-utils.js"></script>
         <script src="scripts/enum.js"></script>
         <script src="scripts/main.js"></script>
-
-
     </body>
 </html>

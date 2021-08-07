@@ -2,6 +2,10 @@
     box-sizing: border-box;
 }
 
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
 header {
     position: fixed;
     z-index: 1;
@@ -182,9 +186,91 @@ section.window-login div.center img.loading{
     display: none;
 }
 
-.swipe-left {
+section.window-login.swipe-left {
     transition: 1s !important;
     left: -100vw !important;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.6);
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: none;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+aside.menu-right {
+    position: fixed;
+    width: 259px;
+    background-color: #FFFFFF;
+    height: 100vh;
+    z-index: 3;
+    right: -100vw;
+    top: 0;
+    padding: 0 27px;
+    transition: right 0.5s;
+}
+
+aside.menu-right.active {
+    right: 0 !important;
+}
+
+aside.menu-right ion-icon.list-icon {
+    font-size: 24px;
+    margin-right: 8px; 
+}
+
+ion-icon.checkmark {
+    color: #28BB25;
+    --ionicon-stroke-width: 100px;
+    font-size: 12px;
+    display: none;
+}
+
+aside.menu-right > span {
+    display: flex;
+    text-align: center;
+    margin: 27px 0;
+    justify-content: center;
+}
+
+aside.menu-right > ul {
+    margin-top: 4px;
+}
+
+aside.menu-right > ul li {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
+
+aside.menu-right > ul li div:first-child {
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+aside.menu-right > ul li.selected .checkmark{
+    display: flex;
+}
+
+
+strong {
+    font-weight: bold;
 }
 
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
@@ -199,7 +285,6 @@ color: #000000;
 ::-ms-input-placeholder { /* Microsoft Edge */
 color: #000000;
 }
-
 
 section.window-login div.center input::placeholder {
     color: #AEAEAE;
