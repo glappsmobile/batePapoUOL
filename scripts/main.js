@@ -78,10 +78,7 @@ function disableButtonAndInput(doDisableButton, doDisableInput){
         button = document.querySelector(".container-send-message .button-send");
         input = document.querySelector("div.container-send-message input");
         buttonStateIndex = 1;
-        console.log("chat")
     }
-
-    console.log(`Button ${buttonsState[buttonStateIndex].name} State: ${buttonsState[buttonStateIndex].state}`);
 
     switch (doDisableButton){
         case 0:
@@ -241,6 +238,7 @@ function renderMessages(messages){
         loading(false);
         ScrollUtils.scrollToBottom(containerMessages);
         viewWindowsLogin.classList.add("swipe-left");
+        disableButtonAndInput(1, 0);
     }
 }
 
@@ -276,7 +274,7 @@ function joinRoomSuccess(){
 
     getUsers();
     retrieveMessages();
-   // keepActive();
+    keepActive();
 }
 
 function joinRoomError(error){
@@ -349,7 +347,7 @@ function keepActive(){
 
 function sendMessageSuccess(response, inputMessage) {
     loading(false);
-    //disableButtonAndInput(true, false);
+    disableButtonAndInput(1, 0);
     thisMessage.retries = 0;
     inputMessage.value = "";
     retrieveMessages();
@@ -378,7 +376,7 @@ function sendMessageError(error, inputMessage){
             }
 
         } else {
-            alert("Mensagem inválida!");
+          //  alert("Mensagem inválida!");
             inputMessage.value = "";
         }
 
