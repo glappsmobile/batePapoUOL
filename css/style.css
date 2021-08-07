@@ -214,8 +214,12 @@ aside.menu-right {
     z-index: 3;
     right: -100vw;
     top: 0;
-    padding: 0 27px;
     transition: right 0.5s;
+}
+
+aside.menu-right li {
+    padding-left: 27px;
+    padding-right: 27px;
 }
 
 aside.menu-right.active {
@@ -256,6 +260,11 @@ aside.menu-right > ul li {
     -khtml-user-select: none;
     -webkit-user-select: none;
     -o-user-select: none;
+}
+
+aside.menu-right > ul li.disabled {
+    color:gray;
+    pointer-events: none;
 }
 
 aside.menu-right > ul li div:first-child {

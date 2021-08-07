@@ -43,7 +43,7 @@ function onLoad(){
 function loading(booLoading){
     WINDOWS.CURRENT = WINDOWS.LOGIN;
     isLoading = booLoading;
-
+    setPrivacy(false);
     let imgLoading;
     if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
         imgLoading = document.querySelector("section.window-login div.center img.loading");
@@ -284,12 +284,19 @@ function setPrivacy(isPrivate){
         optionPrivate.classList.remove("selected");
         thisMessage.type = MESSAGE_TYPE.MESSAGE;
     }
-    
+
+    if (thisMessage.to === TO_ALL){
+        optionPrivate.classList.add("disabled")
+    } else {
+        optionPrivate.classList.remove("disabled")
+    }
 }
 
 
 function toggleSelectedUser(user){
     const lastSelectedUser = document.querySelector("ul.users li.user.selected");
+    const allUsers = document.querySelector("ul.users li.user:first-child");
+
     thisMessage.to = TO_ALL;
 
     if (lastSelectedUser !== null && lastSelectedUser !== user) { 
@@ -304,11 +311,16 @@ function toggleSelectedUser(user){
             thisMessage.to = userName;
         } else {
             setPrivacy(false);
+            allUsers.classList.add("selected");
         }
 
     } else {
         setPrivacy(false);
+        allUsers.classList.add("selected");
     }
+
+    //FORCE CHECK IF PRIVATE OPTION SHOULD BE ENABLED OR DISABLED;
+    setPrivacy(thisMessage.type === MESSAGE_TYPE.PRIVATE)
 }
 
 function toggleOverlay(){
