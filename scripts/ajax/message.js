@@ -55,7 +55,7 @@ function renderMessages(messages){
         }
     });       
 
-    const scrollableArea = 100;
+    const scrollableArea = 200;
     const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.getDistanceFromBottom(containerMessages) >= 0);
 
     if (isInScrollableArea) { ScrollUtils.scrollToBottom(containerMessages); }

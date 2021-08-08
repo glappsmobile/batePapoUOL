@@ -3,12 +3,18 @@
 *   user name too big on spanto
 *   freeze some arrays
 *   img loading not move butto nand input
-*   multiline user name deceasing icon
-*   disable join button if invalid
+*   multiline user name decreasing icon size
 *   melhorar nome dos inputs e buttons
-*   rejoin on error keeping active
-*   separar parte do join em outro script
-*   clear message input as soon
+*   reduce caracters to 14 input name
+*   fix auto scroll
+*   transition to div center login
+*   send message icon need a max-width
+*   input message going on bate papo if mobile keyboard opens
+*   send message button not centered vertically
+*   set max-size for user list
+*   move up container message when mobile keyboard opened
+*   on desktop side bar can be permanent
+*   increase clickable area of side bar menu
 */
 
 function onLoad(){
