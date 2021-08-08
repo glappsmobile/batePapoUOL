@@ -1,3 +1,16 @@
+function updateSpanTo(){
+    const spanTo = document.querySelector(".container-send-message span#to");
+
+    if (thisMessage.to === TO_ALL_USERS || thisMessage.to === KEY_TODOS){
+        spanTo.innerHTML = "";
+    } else {
+        spanTo.innerHTML = `Enviando para ${thisMessage.to}`;
+        if (thisMessage.type === MESSAGE_TYPE.PRIVATE){
+            spanTo.innerHTML += " (reservadamente)";
+        }
+    }
+}
+
 function toggleMessagesVisibility(type){
     const indexType = ArrayUtils.getIndexByAttr(hiddenMessages, "type", type);
 
@@ -71,10 +84,8 @@ function renderMessages(messages){
         disableButtonAndInput(1, 0);
     }
 }
-function retrieveMessagesError(error){
-    if (!checkInternet(false)) {return;}
 
-}
+
 
 function retrieveMessagesSuccess(response){
     const messages = response.data;
@@ -87,12 +98,10 @@ function retrieveMessagesSuccess(response){
 }
 
 function retrieveMessages(){
-
     if (!checkInternet(false)) {return;}
 
     axios.get(API_URL.MESSAGES)
     .then(retrieveMessagesSuccess)
-    .catch(retrieveMessagesError);
 }
 
 function sendMessageSuccess(response, inputMessage) {    
@@ -127,6 +136,7 @@ function sendMessageError(error, inputMessage){
         inputMessage.value = "";
     }
 }
+
 
 function sendMessage(){
     console.log("Sending message")
@@ -174,15 +184,3 @@ function setPrivacy(isPrivate){
     updateSpanTo();
 }
 
-function updateSpanTo(){
-    const spanTo = document.querySelector(".container-send-message span#to");
-
-    if (thisMessage.to === TO_ALL_USERS || thisMessage.to === KEY_TODOS){
-        spanTo.innerHTML = "";
-    } else {
-        spanTo.innerHTML = `Enviando para ${thisMessage.to}`;
-        if (thisMessage.type === MESSAGE_TYPE.PRIVATE){
-            spanTo.innerHTML += " (reservadamente)";
-        }
-    }
-}

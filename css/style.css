@@ -168,7 +168,7 @@ input:focus {
     color: red;
 }
 
-.window-login div.center input.name{
+.window-login div.center input.join{
     width: 270px;
     height: 54px;
     text-align: center;

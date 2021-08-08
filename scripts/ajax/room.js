@@ -15,7 +15,7 @@ function joinRoomError(error){
     loading(false);
     thisUser = {};
     const tvError = document.querySelector(".window-login div.center span.error");
-    const inputName = document.querySelector(".window-login div.center input.name");
+    const inputName = document.querySelector(".window-login div.center input.join");
     const status = getErrorStatusCode(error);
 
     switch (status){

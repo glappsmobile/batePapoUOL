@@ -2,20 +2,19 @@
 *   user name too big on list
 *   user name too big on spanto
 *   freeze some arrays
-*   img loading not move butto nand input
+*   img loading shouldn't move button and input
 *   multiline user name decreasing icon size
-*   melhorar nome dos inputs e buttons
 *   reduce caracters to 14 input name
-*   fix auto scroll
-*   transition to div center login
+*   transition to div.center login
 *   send message icon need a max-width
-*   input message going on bate papo if mobile keyboard opens
+*   input message going over logo if mobile keyboard opens
 *   send message button not centered vertically
-*   set max-size for user list
+*   set max-height for user list
 *   move up container message when mobile keyboard opened
 *   on desktop side bar can be permanent
 *   increase clickable area of side bar menu
 *   move functions from main to upper level
+*   do not change background of disabled input
 */
 
 
@@ -42,12 +41,12 @@ function onLoad(){
     viewWindowsLogin.classList.add("swipe-left");*/
 }
 
-function isValidTex(text){
-  /*  let treatedText = treatText(text);
+function isValidText(text){
+   let treatedText = treatText(text);
 
     if (StringUtils.isBlank(treatedText)){
         return false;
-    }*/
+    }
 
     return true;
 }
@@ -66,50 +65,31 @@ function checkInternet(showAlert){
     return isOnline
 }
 
-function disableButtonAndInput(doDisableButton, doDisableInput){
+function changeButtonAndInputState(buttonState, inputState){
     let input;
     let button;
-    let buttonStateIndex;
+    const buttonStateIndex = ArrayUtils.getIndexByAttr(buttonsStates, "window", WINDOWS.CURRENT);
 
     if (WINDOWS.CURRENT === WINDOWS.LOGIN){
-        button = document.querySelector(".window-login .button-join");
-        input = document.querySelector(".window-login input.name");
-        buttonStateIndex = 0;
+        button = document.querySelector(".window-login button.join");
+        input = document.querySelector(".window-login input.join");
     } 
     else if (WINDOWS.CURRENT === WINDOWS.CHAT) {
-        button = document.querySelector(".container-send-message .button-send");
-        input = document.querySelector("div.container-send-message input");
-        buttonStateIndex = 1;
+        button = document.querySelector(".container-send-message button.send");
+        input = document.querySelector(".container-send-message input.send");
     }
 
-    switch (doDisableButton){
-        case 0:
-            button.classList.remove("disabled");
-            buttonsState[buttonStateIndex].state = false;
-            break;
-        
-        case 1:
-            button.classList.add("disabled");
-            buttonsState[buttonStateIndex].state = true;
-            break;
-        
-        case 2:
-            if (isValidTex(input.value)){
-                button.classList.remove("disabled");
-                buttonsState[buttonStateIndex].state = false;
-            } else {
-                button.classList.add("disabled");
-                buttonsState[buttonStateIndex].state = true;
-            }
-            break;
+    if (buttonState === AUTO){
+        if (isValidText(input.value)){
+            buttonState = ENABLED;
+        } else {
+            buttonState = DISABLED;
+        }
     }
 
-    if (doDisableInput){
-        input.disabled = true;
-    } else {  
-        input.disabled = false;
-    }
-    
+    input.disabled = !Boolean(inputState);
+    buttonsStates[buttonStateIndex].state = buttonState;
+    button.classList.toggle("disabled", !Boolean(buttonState));
 }
 
 function loading(booLoading){
@@ -117,50 +97,42 @@ function loading(booLoading){
     
     if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
         const imgLoading = document.querySelector("section.window-login div.center img.loading");
-        if (booLoading){
-            imgLoading.classList.remove("hidden");
-            disableButtonAndInput(1, 1);
-        } else {  
-            imgLoading.classList.add("hidden");
-            disableButtonAndInput(1, 0);
-        }
+        imgLoading.classList.toggle("hidden", !isLoading);
+        changeButtonAndInputState(DISABLED, !isLoading);
     }
 
     if (WINDOWS.CURRENT === WINDOWS.CHAT){
-        if (booLoading){
-            disableButtonAndInput(1, 1);
+        if (isLoading){
+            changeButtonAndInputState(DISABLED, DISABLED);
         } else {
-            disableButtonAndInput(2, false);
+            changeButtonAndInputState(AUTO, ENABLED);
         }
     }
 }
 
 function initialConfig(){
-    const inputMessage = document.querySelector("div.container-send-message input");
-    const inputName = document.querySelector("section.window-login div.center input");
-    disableButtonAndInput(1, 0);
-
-    let tryAgain = false;
+    const inputMessage = document.querySelector(".container-send-message input.send");
+    const inputName = document.querySelector(".window-login input.join");
     inputName.focus();
+    changeButtonAndInputState(DISABLED, ENABLED);
 
     inputName.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
-            if (!buttonsState[0].state) { joinRoom(); }
+            if (buttonsStates[0].state) { joinRoom(); }
         }
 
-        disableButtonAndInput(2, false);
+        changeButtonAndInputState(AUTO, ENABLED);
     });
 
     inputMessage.addEventListener("keyup", function(event) {
         if (event.keyCode === 13) {
             event.preventDefault();
-            if (!buttonsState[1].state) { sendMessage(); }
+            if (buttonsStates[1].state) { sendMessage(); }
         }
 
-        disableButtonAndInput(2, false);
+        changeButtonAndInputState(AUTO, ENABLED);
     });
-
 }
 
 function clearAllIntervals(){
@@ -177,7 +149,7 @@ function treatText(text){
 }
 
 function toggleMenuRight(){
-    const menuRight = document.querySelector("aside.menu-right");
+    const menuRight = document.querySelector(".menu-right");
     menuRight.classList.toggle("active");
     toggleOverlay();
 }

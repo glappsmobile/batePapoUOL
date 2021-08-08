@@ -48,13 +48,13 @@ const TO_ALL_USERS = "TO_ALL_USERS_USERS";
 const KEEP_ACTIVE = "KEEP_ACTIVE";
 const UPDATE_USERS = "UPDATE_USERS";
 const UPDATE_MESSAGES = "UPDATE_MESSAGES"; 
-const DISABLE = 0;
-const ENABLE = 1;
+const DISABLED = 0;
+const ENABLED = 1;
 const AUTO = 2;
 const KEY_TODOS = "Todos"
 
 let intervals = [];
 let isLoading = false;
-let buttonsState = [{name: "join", state: false}, {name: "send", state: false}];
+let buttonsStates = [{window: WINDOWS.LOGIN, state: false}, {window: WINDOWS.CHAT, state: false}];
 let thisMessage = {type: MESSAGE_TYPE.MESSAGE, to: null, retries: 0}
 let previousLastMessage = {time: undefined, text: undefined, status: undefined}

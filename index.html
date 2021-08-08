@@ -24,10 +24,10 @@
 
         <div class="container-send-message">
             <div>
-                <input placeholder="Escreva aqui..." type="text" />
+                <input class="send" placeholder="Escreva aqui..." type="text" />
                 <span id="to"></span>
             </div>
-            <ion-button title="Enviar mensagem" onclick="sendMessage()" class="button-send">
+            <ion-button title="Enviar mensagem" onclick="sendMessage()" class="send">
                 <ion-icon name="paper-plane-outline"></ion-icon>
             </ion-button>
         </div>
@@ -63,9 +63,9 @@
             <div class="center">
                 <div>
                     <span class="error"></span>
-                    <input class= "name" placeholder="Digite seu nome" type="text" maxlength="90"/>
+                    <input class= "join" placeholder="Digite seu nome" type="text" maxlength="90"/>
                 </div>
-                <button onclick="joinRoom();" class="button-join"> Entrar </button>
+                <button onclick="joinRoom();" class="join"> Entrar </button>
                 <img src="images/loading.gif" class="loading hidden"/>
             </div>
         </section>
