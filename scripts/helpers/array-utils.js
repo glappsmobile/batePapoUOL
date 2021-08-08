@@ -21,6 +21,16 @@ const ArrayUtils = {
 
         return -1;
     },
+    removeIndex: (array, index) => {
+        const newArray = array.filter((fValue, fIndex, fArray) => {
+            if (fIndex === index ) {
+                return false;
+            }
+            return true;
+        });
+
+        return newArray;
+    },
     isEqual: (array1, array2) => {
         if (JSON.stringify(array1) === JSON.stringify(array2)){
             return true;
