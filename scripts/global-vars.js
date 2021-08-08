@@ -1,7 +1,8 @@
 const STATUS_CODE = {
     SUCCESS: 200,
     BAD_REQUEST: 400,
-    UNPROCESSABLE_ENTITY: 422
+    UNPROCESSABLE_ENTITY: 422,
+    NETWORK_ERROR: 999
 };
 
 const MESSAGE_TYPE = {
@@ -22,6 +23,14 @@ const WINDOWS = {
     CHAT: "WINDOW_CHAT",
     CURRENT: "WINDOW_LOGIN"
 }
+const AJAX = {
+    POST_MESSAGE: "SEND_MESSAGE",
+    GET_MESSAGE: "SEND_MESSAGE",
+    POST_STATUS: "SEND_MESSAGE",
+    POST_PARTICIPANTS: "POST_PARTICIPANTS",
+    GET_PARTICIPANTS: "GET_PARTICIPANTS"
+}
+
 
 const hiddenMessages = [
     {type: MESSAGE_TYPE.STATUS,  hidden: false},
@@ -39,6 +48,9 @@ const TO_ALL_USERS = "TO_ALL_USERS_USERS";
 const KEEP_ACTIVE = "KEEP_ACTIVE";
 const UPDATE_USERS = "UPDATE_USERS";
 const UPDATE_MESSAGES = "UPDATE_MESSAGES"; 
+const DISABLE = 0;
+const ENABLE = 1;
+const AUTO = 2;
 const KEY_TODOS = "Todos"
 
 let intervals = [];

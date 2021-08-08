@@ -17,12 +17,12 @@ function renderMessages(messages){
             if (message.type === MESSAGE_TYPE.STATUS){
                 containerMessages.innerHTML += `
                 <li class="status">
-                <span>
+                <p>
                 <span class="time">(${message.time})</span>
                 <span>&#160;</span>
                 <span class="from">${message.from}</span>
                 <span class="text">${message.text}</span>
-                </span>
+                </p>
                 </li>`;
                 return;
             } 
@@ -30,12 +30,12 @@ function renderMessages(messages){
             if (message.type === MESSAGE_TYPE.MESSAGE){
                 containerMessages.innerHTML += `
                 <li class="message">
-                <span>
+                <p>
                 <span class="time">(${message.time})</span>
                 <span>&#160;</span>
                 <span class="from"><en>${message.from}</en> para <en>${message.to}</en>: </span>
                 <span class="text">${message.text}</span>
-                </span>
+                </p>
                 </li>`;
                 return;
             } 
@@ -43,21 +43,21 @@ function renderMessages(messages){
             if (message.type === MESSAGE_TYPE.PRIVATE){
                 containerMessages.innerHTML += `
                 <li class="private">
-                <span>
+                <p>
                 <span class="time">(${message.time})</span>
                 <span>&#160;</span>
                 <span class="from"><en>${message.from}</en> reservadamente para <en>${message.to}</en>: </span>
                 <span class="text">${message.text}</span>
-                </span>
+                </p>
                 </li>`;
                 return;
             }
         }
     });       
 
+    //ENABLE AUTOSCROLL IF IN SCROLLABLE AREA
     const scrollableArea = 200;
     const isInScrollableArea = Boolean(scrollableArea - ScrollUtils.getDistanceFromBottom(containerMessages) >= 0);
-
     if (isInScrollableArea) { ScrollUtils.scrollToBottom(containerMessages); }
 
     if (WINDOWS.CURRENT === WINDOWS.LOGIN){
@@ -71,6 +71,10 @@ function renderMessages(messages){
         disableButtonAndInput(1, 0);
     }
 }
+function retrieveMessagesError(error){
+    if (!checkInternet(false)) {return;}
+
+}
 
 function retrieveMessagesSuccess(response){
     const messages = response.data;
@@ -83,11 +87,15 @@ function retrieveMessagesSuccess(response){
 }
 
 function retrieveMessages(){
+
+    if (!checkInternet(false)) {return;}
+
     axios.get(API_URL.MESSAGES)
-    .then(retrieveMessagesSuccess);
+    .then(retrieveMessagesSuccess)
+    .catch(retrieveMessagesError);
 }
 
-function sendMessageSuccess(response, inputMessage) {
+function sendMessageSuccess(response, inputMessage) {    
     loading(false);
     disableButtonAndInput(1, 0);
     thisMessage.retries = 0;
@@ -97,39 +105,36 @@ function sendMessageSuccess(response, inputMessage) {
 
 function sendMessageError(error, inputMessage){
     loading(false);
-    if (isUserOnline()){
-        const status = error.response.status;
-        console.error(`Send message failed: ${error.response.statusText}`);
-        let tryAgain = false;
+    const status = error.response.status;
+    if (!checkInternet(true)) {return;}
 
-        if (status === STATUS_CODE.BAD_REQUEST){
-            tryAgain = true;            
-        }
-
-        if (tryAgain){
-    
-            if(thisMessage.retries > CONFIG.MAX_RETRIES){
-                alert("Mensagem inválida!");
-                inputMessage.value = "";
-            } else {
-                loading(true)
-                thisMessage.retries++;
-                setTimeout(sendMessage, CONFIG.DELAY_RETRY);
-            }
-
-        } else {
-          //  alert("Mensagem inválida!");
-            inputMessage.value = "";
-        }
-
-    } else if (!isUserOnline()){
-        //REJOIN THE ROOM
+    if(!isUserOnline()) {
+        //REJOIN ROOM
         joinRoom(true);
+        return;
+    }
+
+    let retry = false;
+
+    if (status === STATUS_CODE.BAD_REQUEST){
+        retry = true;
+    }
+
+    if (retry){
+        ajaxRetry(AJAX.POST_MESSAGE, "Mensagem inválida!");
+    } else {
+        alert("Mensagem inválida!");
+        inputMessage.value = "";
     }
 }
 
 function sendMessage(){
+    console.log("Sending message")
+    if (!checkInternet(true)) {return}
+    if (isLoading) {return}
+
     loading(true);
+
     const inputMessage = document.querySelector("div.container-send-message input");
     inputMessage.value = treatText(inputMessage.value);
     const messageText = inputMessage.value;

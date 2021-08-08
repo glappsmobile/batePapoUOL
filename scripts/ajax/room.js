@@ -12,62 +12,57 @@ function joinRoomSuccess(){
 }
 
 function joinRoomError(error){
-    const tvError = document.querySelector("section.window-login div.center span.error");
-    const status = error.response.status;
-    const inputName = document.querySelector("section.window-login div.center input");
-    inputName.value = "";
+    loading(false);
+    thisUser = {};
+    const tvError = document.querySelector(".window-login div.center span.error");
+    const inputName = document.querySelector(".window-login div.center input.name");
+    const status = getErrorStatusCode(error);
 
     switch (status){
         case STATUS_CODE.BAD_REQUEST:
             tvError.innerHTML = "Nome de usuário inválido ou já existe.";
+            inputName.value = "";
             break;
         case STATUS_CODE.UNPROCESSABLE_ENTITY:
             tvError.innerHTML = "Nome de usuário inválido.";
+            inputName.value = "";
             break;    
         default:
-            tvError.innerHTML = "Erro ao entrar, tente novamente.";
-            inputName.value = thisUser.name;
+            tvError.innerHTML = "Erro ao entrar, tente novamente mais tarde.";
             break;
     }
-
-    thisUser = {};
-    loading(false);
 }
 
 function joinRoom(isRejoining){
-    if (!isLoading){
-        clearAllIntervals();
+    
+    if (!checkInternet(true)) {return;}
+    if (isLoading) {return;}
 
-        loading(true);
-        let funSuccess;
+    clearAllIntervals();
 
-        if (!isRejoining){
-            const inputName = document.querySelector("section.window-login div.center input");
-            inputName.value = treatText(inputName.value);
-            thisUser.name = inputName.value;
-            funSuccess = joinRoomSuccess;
-        } else {
-            funSuccess = () => {
-                sendMessage();
-                joinRoomSuccess();
-            }
-        }
+    loading(true);
+    let funSuccess;
 
-        if (!StringUtils.isBlank(thisUser.name)){
-            axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: thisUser.name})
-            .then(funSuccess)
-            .catch(joinRoomError);
-        } else {
-            const error = {response: {status: STATUS_CODE.UNPROCESSABLE_ENTITY}};
-            joinRoomError(error);
+    if (!isRejoining){
+        const inputName = document.querySelector("section.window-login div.center input");
+        inputName.value = treatText(inputName.value);
+        thisUser.name = inputName.value;
+        funSuccess = joinRoomSuccess;
+    } else {
+        funSuccess = () => {
+            joinRoomSuccess();
+            sendMessage();
         }
     }
-}
 
-function stopInterval(intervalName){
-    const intervalIndex = ArrayUtils.getIndexByAttr(intervals, "name", intervalName);
-    clearInterval(intervals[intervalIndex].id);
-    intervals = ArrayUtils.removeIndex(intervals, intervalIndex);
+    if (!StringUtils.isBlank(thisUser.name)){
+        axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: thisUser.name})
+        .then(funSuccess)
+        .catch(joinRoomError);
+    } else {
+        const error = {response: {status: STATUS_CODE.UNPROCESSABLE_ENTITY}};
+        joinRoomError(error);
+    }
 }
 
 function keepActiveSuccess(response) {
@@ -97,6 +92,9 @@ function keepActiveError(error) {
 }
 
 function keepActive(){
+
+    if (!checkInternet(false)) {return;}
+
         axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/status", {name: thisUser.name})
         .then(keepActiveSuccess)
         .catch(keepActiveError);

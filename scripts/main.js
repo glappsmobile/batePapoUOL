@@ -15,9 +15,20 @@
 *   move up container message when mobile keyboard opened
 *   on desktop side bar can be permanent
 *   increase clickable area of side bar menu
+*   move functions from main to upper level
 */
 
+
+const randomNames = ["Australopithecus", "Darwin", "Glauco", "Beta Tester", "Driven", "Pirula", "Pelvis", "ImpPlant", "LateNever", "HarpyWitch", "MiGrain", "Possumiss", "Gigadude", "Redemptor", "Astropower", "Plover", "OculusVision", "Dunning", "Kruger"]
+const fakeUsers = [];
 function onLoad(){
+
+
+    randomNames.forEach((name) => {
+        fakeUsers.push({name});
+    })
+
+
     initialConfig();
     //toggleMessagesVisibility(MESSAGE_TYPE.STATUS);
     //const inputName = document.querySelector("section.window-login div.center input");
@@ -32,13 +43,27 @@ function onLoad(){
 }
 
 function isValidTex(text){
-    let treatedText = treatText(text);
+  /*  let treatedText = treatText(text);
 
     if (StringUtils.isBlank(treatedText)){
         return false;
-    }
+    }*/
 
     return true;
+}
+
+function stopInterval(intervalName){
+    const intervalIndex = ArrayUtils.getIndexByAttr(intervals, "name", intervalName);
+    clearInterval(intervals[intervalIndex].id);
+    intervals = ArrayUtils.removeIndex(intervals, intervalIndex);
+}
+
+function checkInternet(showAlert){
+    const isOnline = window.navigator.onLine;
+
+    if (!isOnline && showAlert) { alert("Verifique sua conexão com a internet."); }
+
+    return isOnline
 }
 
 function disableButtonAndInput(doDisableButton, doDisableInput){
@@ -48,7 +73,7 @@ function disableButtonAndInput(doDisableButton, doDisableInput){
 
     if (WINDOWS.CURRENT === WINDOWS.LOGIN){
         button = document.querySelector(".window-login .button-join");
-        input = document.querySelector("section.window-login div.center input");
+        input = document.querySelector(".window-login input.name");
         buttonStateIndex = 0;
     } 
     else if (WINDOWS.CURRENT === WINDOWS.CHAT) {
@@ -87,7 +112,6 @@ function disableButtonAndInput(doDisableButton, doDisableInput){
     
 }
 
-
 function loading(booLoading){
     isLoading = booLoading;
     
@@ -95,8 +119,10 @@ function loading(booLoading){
         const imgLoading = document.querySelector("section.window-login div.center img.loading");
         if (booLoading){
             imgLoading.classList.remove("hidden");
+            disableButtonAndInput(1, 1);
         } else {  
             imgLoading.classList.add("hidden");
+            disableButtonAndInput(1, 0);
         }
     }
 
@@ -114,6 +140,7 @@ function initialConfig(){
     const inputName = document.querySelector("section.window-login div.center input");
     disableButtonAndInput(1, 0);
 
+    let tryAgain = false;
     inputName.focus();
 
     inputName.addEventListener("keyup", function(event) {

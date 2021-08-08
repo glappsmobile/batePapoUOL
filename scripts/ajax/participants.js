@@ -71,6 +71,9 @@ function toggleSelectedUser(user) {
 }
 
 function getUsers() {
+
+    if (!checkInternet(false)) {return}
+
     const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants")
     .then((response) => {
         if (!ArrayUtils.isEqual(response.data, onlineUsers)){
