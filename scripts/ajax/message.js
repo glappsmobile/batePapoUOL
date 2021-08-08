@@ -81,7 +81,7 @@ function renderMessages(messages){
         loading(false);
         ScrollUtils.scrollToBottom(containerMessages);
         viewWindowsLogin.classList.add("swipe-left");
-        disableButtonAndInput(1, 0);
+        changeButtonAndInputState(DISABLED, ENABLED);
     }
 }
 
@@ -106,7 +106,7 @@ function retrieveMessages(){
 
 function sendMessageSuccess(response, inputMessage) {    
     loading(false);
-    disableButtonAndInput(1, 0);
+    changeButtonAndInputState(DISABLED, ENABLED);
     thisMessage.retries = 0;
     inputMessage.value = "";
     retrieveMessages();
@@ -139,7 +139,6 @@ function sendMessageError(error, inputMessage){
 
 
 function sendMessage(){
-    console.log("Sending message")
     if (!checkInternet(true)) {return}
     if (isLoading) {return}
 

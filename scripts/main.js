@@ -20,25 +20,12 @@
 
 const randomNames = ["Australopithecus", "Darwin", "Glauco", "Beta Tester", "Driven", "Pirula", "Pelvis", "ImpPlant", "LateNever", "HarpyWitch", "MiGrain", "Possumiss", "Gigadude", "Redemptor", "Astropower", "Plover", "OculusVision", "Dunning", "Kruger"]
 const fakeUsers = [];
+
 function onLoad(){
-
-
     randomNames.forEach((name) => {
         fakeUsers.push({name});
     })
-
-
     initialConfig();
-    //toggleMessagesVisibility(MESSAGE_TYPE.STATUS);
-    //const inputName = document.querySelector("section.window-login div.center input");
-    // inputName.value = "Preguiçoso Num. "+ (Math.random() * 100000).toFixed();
-    // joinRoom(); 
-    //retrieveMessages();
-
-
-   /*const viewWindowsLogin  = document.querySelector("section.window-login");
-  
-    viewWindowsLogin.classList.add("swipe-left");*/
 }
 
 function isValidText(text){
@@ -75,7 +62,7 @@ function changeButtonAndInputState(buttonState, inputState){
         input = document.querySelector(".window-login input.join");
     } 
     else if (WINDOWS.CURRENT === WINDOWS.CHAT) {
-        button = document.querySelector(".container-send-message button.send");
+        button = document.querySelector(".container-send-message ion-button.send");
         input = document.querySelector(".container-send-message input.send");
     }
 
@@ -110,31 +97,6 @@ function loading(booLoading){
     }
 }
 
-function initialConfig(){
-    const inputMessage = document.querySelector(".container-send-message input.send");
-    const inputName = document.querySelector(".window-login input.join");
-    inputName.focus();
-    changeButtonAndInputState(DISABLED, ENABLED);
-
-    inputName.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            if (buttonsStates[0].state) { joinRoom(); }
-        }
-
-        changeButtonAndInputState(AUTO, ENABLED);
-    });
-
-    inputMessage.addEventListener("keyup", function(event) {
-        if (event.keyCode === 13) {
-            event.preventDefault();
-            if (buttonsStates[1].state) { sendMessage(); }
-        }
-
-        changeButtonAndInputState(AUTO, ENABLED);
-    });
-}
-
 function clearAllIntervals(){
     intervals.forEach( (interval) => {
         clearInterval(interval.id);
@@ -159,4 +121,28 @@ function toggleOverlay(){
     overlay.classList.toggle("active");
 }
 
+function initialConfig(){
+    const inputMessage = document.querySelector(".container-send-message input.send");
+    const inputName = document.querySelector(".window-login input.join");
+    inputName.focus();
+    changeButtonAndInputState(DISABLED, ENABLED);
+
+    inputName.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            if (buttonsStates[0].state) { joinRoom(); }
+        }
+
+        changeButtonAndInputState(AUTO, ENABLED);
+    });
+
+    inputMessage.addEventListener("keyup", function(event) {
+        if (event.keyCode === 13) {
+            event.preventDefault();
+            if (buttonsStates[1].state) { sendMessage(); }
+        }
+
+        changeButtonAndInputState(AUTO, ENABLED);
+    });
+}
 
