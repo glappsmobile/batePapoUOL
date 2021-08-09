@@ -241,7 +241,7 @@ aside.menu-right {
     position: fixed;
     width: 259px;
     background-color: #FFFFFF;
-    height: 100vh;
+    bottom: 0;
     z-index: 3;
     right: -100vw;
     top: 0;
@@ -273,7 +273,7 @@ aside.menu-right > span {
 
 aside.menu-right > ul {
     margin-top: 4px;
-    max-height: 65%;
+    max-height: calc(100vh - 300px);
     overflow-y: scroll;
 }
 
