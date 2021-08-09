@@ -149,7 +149,7 @@ input:focus {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    transition: left 0.5s;
+    transition: all 0.5s;
 }
 
 .window-login img.logo {
@@ -167,14 +167,15 @@ input:focus {
     align-items: center;
     justify-content: center;
     width: 100%;
-    transition: 1s;
+    transition: all 1s;
 }
 
 .window-login div.center div {
     display: flex;
     flex-direction: column;
     width: auto;
-    transition: 1s;
+    transition: all 1s;
+
 
 }
 

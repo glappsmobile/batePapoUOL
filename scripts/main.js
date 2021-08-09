@@ -1,5 +1,4 @@
 /* TODO:
-*   freeze some arrays
 *   transition to div.center login
 *   move up container message when mobile keyboard opened
 */
