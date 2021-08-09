@@ -25,7 +25,6 @@ const loading = {
 }
 
 function focusInputSend(){
-    console.log("focusing")
     const inputSend = document.querySelector(".container-send-message input.send");
     inputSend.focus();
 }

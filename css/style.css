@@ -150,6 +150,7 @@ input:focus {
     justify-content: center;
     flex-direction: column;
     transition: left 0.5s;
+    transition: transform 100ms;
 }
 
 .window-login img.logo {
@@ -166,7 +167,6 @@ input:focus {
     align-items: center;
     justify-content: center;
     width: 100%;
-    transition: all 0.1s;
 }
 
 .window-login div.center div {
@@ -273,6 +273,10 @@ aside.menu-right > span {
 
 aside.menu-right > ul {
     margin-top: 4px;
+    
+}
+
+aside.menu-right > ul.users {
     max-height: calc(100vh - 300px);
     overflow-y: scroll;
 }
