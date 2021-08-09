@@ -58,7 +58,7 @@ header > ion-button {
 .container-messages li > p {
     margin: 10px 0;
     word-wrap: break-word;
-    inline-size: 100%; 
+    width: 100%;
     line-height: 20px;
 }
 
@@ -106,9 +106,10 @@ header > ion-button {
     color: black;
 }
 
-.container-send-message span {
+.container-send-message span#to {
     font-size: 14px;
     font-weight: lighter;
+    word-wrap: break-word;
 }
 
 .container-send-message ion-button {
@@ -233,11 +234,6 @@ aside.menu-right {
     transition: right 0.5s;
 }
 
-aside.menu-right li {
-    padding-left: 27px;
-    padding-right: 27px;
-}
-
 aside.menu-right.active {
     right: 0 !important;
 }
@@ -249,9 +245,9 @@ aside.menu-right ion-icon.list-icon {
 
 ion-icon.checkmark {
     color: #28BB25;
-    --ionicon-stroke-width: 100px;
-    font-size: 12px;
-    display: none;
+    --ionicon-stroke-width: 120px;
+    font-size: 14px;
+    visibility: hidden;
 }
 
 aside.menu-right > span {
@@ -263,13 +259,16 @@ aside.menu-right > span {
 
 aside.menu-right > ul {
     margin-top: 4px;
+    max-height: calc(100vh - 300px);
+    overflow-y: scroll;
 }
 
-aside.menu-right > ul li {
-    height: 36px;
+aside.menu-right > ul li{
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 5px 27px;
+    word-wrap: break-word;
     cursor: pointer;
     user-select: none;
     -moz-user-select: none;
@@ -277,6 +276,21 @@ aside.menu-right > ul li {
     -webkit-user-select: none;
     -o-user-select: none;
 }
+
+aside.menu-right > ul li div:first-child {
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    word-wrap: break-word;
+}
+
+aside.menu-right > ul li > div span{
+    width: 145px;
+    word-wrap: break-word;
+    color: black;
+}
+
 
 aside.menu-right > ul li.disabled {
     color:gray;
@@ -294,14 +308,8 @@ button.disabled {
     opacity: 0.5;
 }
 
-aside.menu-right > ul li div:first-child {
-    height: 36px;
-    display: flex;
-    align-items: center;
-}
-
 aside.menu-right > ul li.selected .checkmark{
-    display: flex;
+    visibility: visible;
 }
 
 

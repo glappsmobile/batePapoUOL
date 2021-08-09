@@ -31,14 +31,6 @@ const AJAX = {
     GET_PARTICIPANTS: "GET_PARTICIPANTS"
 }
 
-
-const hiddenMessages = [
-    {type: MESSAGE_TYPE.STATUS,  hidden: false},
-    {type: MESSAGE_TYPE.MESSAGE, hidden: false},
-    {type: MESSAGE_TYPE.PRIVATE, hidden: false}
-];
-
-//DELAY * RETRIES SHOULD BE SMALLER THAN 3000 
 const CONFIG = {
     MAX_RETRIES: 3,
     DELAY_RETRY: 1000

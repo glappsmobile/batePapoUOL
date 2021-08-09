@@ -11,58 +11,48 @@ function updateSpanTo(){
     }
 }
 
-function toggleMessagesVisibility(type){
-    const indexType = ArrayUtils.getIndexByAttr(hiddenMessages, "type", type);
-
-    hiddenMessages[indexType].hidden = !hiddenMessages[indexType].hidden;
-    retrieveMessages();
-}
-
 function renderMessages(messages){
     const containerMessages = document.querySelector("ul.container-messages");
     containerMessages.innerHTML = "";
 
     messages.forEach(message => {
-        const indexType = ArrayUtils.getIndexByAttr(hiddenMessages, "type", message.type);
-        const isTypeHidden = hiddenMessages[indexType].hidden;
 
-        if (!isTypeHidden){
-            if (message.type === MESSAGE_TYPE.STATUS){
-                containerMessages.innerHTML += `
-                <li class="status">
+        if (message.type === MESSAGE_TYPE.STATUS){
+            containerMessages.innerHTML += `
+            <li class="status">
+                    <p>
+                        <span class="time">(${message.time}) </span>
+                        <span class="from">${message.from}</span>
+                        <span class="text">${message.text}</span>
+                    </p>
+            </li>`;
+            return;
+        } 
+    
+        if (message.type === MESSAGE_TYPE.MESSAGE){
+            containerMessages.innerHTML += `
+            <li class="message">
                 <p>
-                <span class="time">(${message.time}) </span>
-                <span class="from">${message.from}</span>
-                <span class="text">${message.text}</span>
+                    <span class="time">(${message.time}) </span>
+                    <span class="from"><en>${message.from}</en> para <en>${message.to}</en>: </span>
+                    <span class="text">${message.text}</span>
                 </p>
-                </li>`;
-                return;
-            } 
-        
-            if (message.type === MESSAGE_TYPE.MESSAGE){
-                containerMessages.innerHTML += `
-                <li class="message">
-                <p>
-                <span class="time">(${message.time}) </span>
-                <span class="from"><en>${message.from}</en> para <en>${message.to}</en>: </span>
-                <span class="text">${message.text}</span>
-                </p>
-                </li>`;
-                return;
-            } 
+            </li>`;
+            return;
+        } 
 
-            if (message.type === MESSAGE_TYPE.PRIVATE){
-                containerMessages.innerHTML += `
-                <li class="private">
+        if (message.type === MESSAGE_TYPE.PRIVATE && (message.from === thisUser.name || message.to === thisUser.name) ){
+            containerMessages.innerHTML += `
+            <li class="private">
                 <p>
-                <span class="time">(${message.time}) </span>
-                <span class="from"><en>${message.from}</en> reservadamente para <en>${message.to}</en>: </span>
-                <span class="text">${message.text}</span>
+                    <span class="time">(${message.time}) </span>
+                    <span class="from"><en>${message.from}</en> reservadamente para <en>${message.to}</en>: </span>
+                    <span class="text">${message.text}</span>
                 </p>
-                </li>`;
-                return;
-            }
+            </li>`;
+            return;
         }
+        
     });       
 
     //ENABLE AUTOSCROLL IF IN SCROLLABLE AREA
