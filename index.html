@@ -23,8 +23,8 @@
         <ul class="container-messages"></ul>
 
         <div class="container-send-message">
-            <div>
-                <input class="send" placeholder="Escreva aqui..." type="text" />
+            <div onclick="focusInputSend()">
+                <input class="send" placeholder="Escreva aqui..." type="text" maxlength="255" />
                 <span id="to"></span>
             </div>
             <ion-button title="Enviar mensagem" onclick="sendMessage()" class="send">
@@ -63,11 +63,12 @@
             <div class="center">
                 <div>
                     <span class="error"></span>
-                    <input class= "join" placeholder="Digite seu nome" type="text" maxlength="90"/>
+                    <input class= "join" placeholder="Digite seu nome" type="text" maxlength="18"/>
                 </div>
                 <button onclick="joinRoom();" class="join"> Entrar </button>
                 <img src="images/loading.gif" class="loading hidden"/>
             </div>
+
         </section>
 
         <div class="overlay" onclick="toggleMenuRight()"></div> 

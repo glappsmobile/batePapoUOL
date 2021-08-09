@@ -12,6 +12,14 @@ ion-icon {
 
 input:disabled {
     color: gray !important;
+    background-color: #FFFFFF;
+}
+
+ion-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
 }
 
 header {
@@ -37,6 +45,8 @@ header > img.logo {
 
 header > ion-button {
     font-size: 42px;
+    width: 70px;
+    justify-content: flex-end;
 }
 
 .container-messages {
@@ -139,7 +149,7 @@ input:focus {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    transition: left 1s;
+    transition: left 0.5s;
 }
 
 .window-login img.logo {
@@ -151,11 +161,13 @@ input:focus {
 }
 
 .window-login div.center {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
+    transition: 0.5s;
 }
 
 .window-login div.center div {
@@ -195,8 +207,10 @@ input:focus {
     align-items: center;
 }
 
-.window-login div.center img.loading{
-    width: 64px;
+.window-login img.loading{
+    top: 130px;
+    position: absolute;
+    width: 32px;
     margin: 20px 0;
 }
 

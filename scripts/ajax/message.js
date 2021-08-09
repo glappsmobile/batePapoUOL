@@ -84,7 +84,7 @@ function retrieveMessages(){
 }
 
 function sendMessageSuccess(response, inputMessage) {    
-    loading(false);
+    loading.stop();
     changeButtonAndInputState(DISABLED, ENABLED);
     thisMessage.retries = 0;
     inputMessage.value = "";
@@ -119,14 +119,14 @@ function sendMessageError(error, inputMessage){
     } else {
         if (errorMessage !== undefined) { alert(errorMessage); }
         inputMessage.value = "";
-        loading(false);
+        loading.stop();
     }
 }
 
 
 function sendMessage(){
     if (!checkInternet(true)) {return}
-    loading(true);
+    loading.start();
 
     const inputMessage = document.querySelector("div.container-send-message input");
     inputMessage.value = treatText(inputMessage.value);

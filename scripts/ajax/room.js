@@ -15,7 +15,7 @@ function joinRoomSuccess(){
 }
 
 function joinRoomError(error){
-    loading(false);
+    loading.stop();
     thisUser.name = undefined;
     const inputName = document.querySelector(".window-login div.center input.join");
     const status = getErrorStatusCode(error);
@@ -49,7 +49,7 @@ function joinRoomError(error){
             toggleWindowLogin(ENABLED);
         }
 
-        loading(false);
+        loading.stop();
     }
 }
 
@@ -57,7 +57,7 @@ function joinRoom(isRejoining){
     
     if (!checkInternet(true)) {return;}
     clearAllIntervals();
-    loading(true);
+    loading.start();
     let funSuccess;
 
     if (!isRejoining){

@@ -1,10 +1,43 @@
+const loading = {
+    isLoading: false,
+    start: () => {
+        loading.toggle(true);
+    },
+    stop: () => {
+        loading.toggle(false);
+    },
+    toggle: (booLoading) =>{ 
+        loading.isLoading = booLoading;
+        if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
+            const imgLoading = document.querySelector(".window-login img.loading");
+            imgLoading.classList.toggle("hidden", !loading.isLoading);
+            changeButtonAndInputState(DISABLED, !loading.isLoading);
+        }
+
+        if (WINDOWS.CURRENT === WINDOWS.CHAT){
+            if (loading.isLoading){
+                changeButtonAndInputState(DISABLED, DISABLED);
+            } else {
+                changeButtonAndInputState(AUTO, ENABLED);
+            }
+        }
+    }
+}
+
+function focusInputSend(){
+    console.log("focusing")
+    const inputSend = document.querySelector(".container-send-message input.send");
+    inputSend.focus();
+}
 
 function isValidText(text){
-    return true;
-
    let treatedText = treatText(text);
 
     if (StringUtils.isBlank(treatedText)){
+        return false;
+    }
+
+    if (WINDOWS.CURRENT === WINDOWS.LOGIN && treatedText === "Todos") {
         return false;
     }
 
@@ -25,7 +58,7 @@ function checkInternet(showAlert){
             alert("Verifique sua conexão com a internet."); 
         }
 
-        loading(false);
+        loading.stop();
     }
 
     return isOnline
@@ -58,24 +91,6 @@ function changeButtonAndInputState(buttonState, inputState){
     button.classList.toggle("disabled", !Boolean(buttonState));
 }
 
-function loading(booLoading){
-    isLoading = booLoading;
-    
-    if (WINDOWS.CURRENT === WINDOWS.LOGIN) {
-        const imgLoading = document.querySelector("section.window-login div.center img.loading");
-        imgLoading.classList.toggle("hidden", !isLoading);
-        changeButtonAndInputState(DISABLED, !isLoading);
-    }
-
-    if (WINDOWS.CURRENT === WINDOWS.CHAT){
-        if (isLoading){
-            changeButtonAndInputState(DISABLED, DISABLED);
-        } else {
-            changeButtonAndInputState(AUTO, ENABLED);
-        }
-    }
-}
-
 function clearAllIntervals(){
     intervals.forEach( (interval) => {
         clearInterval(interval.id);
@@ -98,7 +113,7 @@ function toggleMenuRight(){
 function toggleWindowLogin(doEnable){
     const windowsLogin  = document.querySelector(".window-login");
     const inputName = windowsLogin.querySelector("div.center input");
-    loading(false);
+    loading.stop();
     windowsLogin.classList.toggle("closed", !doEnable);
 
     if (doEnable){
