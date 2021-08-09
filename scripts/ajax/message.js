@@ -31,8 +31,7 @@ function renderMessages(messages){
                 containerMessages.innerHTML += `
                 <li class="status">
                 <p>
-                <span class="time">(${message.time})</span>
-                <span>&#160;</span>
+                <span class="time">(${message.time}) </span>
                 <span class="from">${message.from}</span>
                 <span class="text">${message.text}</span>
                 </p>
@@ -44,8 +43,7 @@ function renderMessages(messages){
                 containerMessages.innerHTML += `
                 <li class="message">
                 <p>
-                <span class="time">(${message.time})</span>
-                <span>&#160;</span>
+                <span class="time">(${message.time}) </span>
                 <span class="from"><en>${message.from}</en> para <en>${message.to}</en>: </span>
                 <span class="text">${message.text}</span>
                 </p>
@@ -57,8 +55,7 @@ function renderMessages(messages){
                 containerMessages.innerHTML += `
                 <li class="private">
                 <p>
-                <span class="time">(${message.time})</span>
-                <span>&#160;</span>
+                <span class="time">(${message.time}) </span>
                 <span class="from"><en>${message.from}</en> reservadamente para <en>${message.to}</en>: </span>
                 <span class="text">${message.text}</span>
                 </p>
@@ -74,17 +71,9 @@ function renderMessages(messages){
     if (isInScrollableArea) { ScrollUtils.scrollToBottom(containerMessages); }
 
     if (WINDOWS.CURRENT === WINDOWS.LOGIN){
-        WINDOWS.CURRENT = WINDOWS.CHAT;
-        const viewWindowsLogin  = document.querySelector("section.window-login");
-        const inputName = viewWindowsLogin.querySelector("div.center input");
-        inputName.blur();
-        loading(false);
-        ScrollUtils.scrollToBottom(containerMessages);
-        viewWindowsLogin.classList.add("swipe-left");
-        changeButtonAndInputState(DISABLED, ENABLED);
+        toggleWindowLogin(DISABLED);
     }
 }
-
 
 
 function retrieveMessagesSuccess(response){
@@ -113,9 +102,7 @@ function sendMessageSuccess(response, inputMessage) {
 }
 
 function sendMessageError(error, inputMessage){
-    loading(false);
-    const status = error.response.status;
-    if (!checkInternet(true)) {return;}
+    const status = getErrorStatusCode(error);
 
     if(!isUserOnline()) {
         //REJOIN ROOM
@@ -124,24 +111,31 @@ function sendMessageError(error, inputMessage){
     }
 
     let retry = false;
+    let errorMessage = undefined;
 
-    if (status === STATUS_CODE.BAD_REQUEST){
-        retry = true;
+    switch(status){
+        case STATUS_CODE.BAD_REQUEST:
+            retry = true;
+            errorMessage = "Mensagem inválida!";
+            break;
+        case STATUS_CODE.NETWORK_ERROR:
+            retry = true;
+            errorMessage = "Erro ao enviar mensagem, cheque sua conexão com a internet.";
+            break;
     }
 
     if (retry){
-        ajaxRetry(AJAX.POST_MESSAGE, "Mensagem inválida!");
+        ajaxRetry(AJAX.POST_MESSAGE, errorMessage, status);
     } else {
-        alert("Mensagem inválida!");
+        if (errorMessage !== undefined) { alert(errorMessage); }
         inputMessage.value = "";
+        loading(false);
     }
 }
 
 
 function sendMessage(){
     if (!checkInternet(true)) {return}
-    if (isLoading) {return}
-
     loading(true);
 
     const inputMessage = document.querySelector("div.container-send-message input");
@@ -153,9 +147,9 @@ function sendMessage(){
         addresse = "Todos";
     }
 
-    const message = {from: thisUser.name, to: addresse, text: messageText,  type: thisMessage.type}
+    const message = {from: thisUser.name , to: addresse, text: messageText,  type: thisMessage.type}
 
-    axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/messages", message)
+    axios.post(API_URL.MESSAGES, message)
     .then ( (response)  =>  sendMessageSuccess(response, inputMessage))
     .catch( (error)     =>  sendMessageError(error, inputMessage));
 }

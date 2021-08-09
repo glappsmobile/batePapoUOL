@@ -1,4 +1,7 @@
 function joinRoomSuccess(){
+    const tvError = document.querySelector(".window-login div.center span.error");
+    tvError.innerHTML = "";
+
     retrieveMessages();
     getUsers();
 
@@ -13,33 +16,47 @@ function joinRoomSuccess(){
 
 function joinRoomError(error){
     loading(false);
-    thisUser = {};
-    const tvError = document.querySelector(".window-login div.center span.error");
+    thisUser.name = undefined;
     const inputName = document.querySelector(".window-login div.center input.join");
     const status = getErrorStatusCode(error);
 
+    let retry = false;
+    let errorMessage = undefined;
+
     switch (status){
         case STATUS_CODE.BAD_REQUEST:
-            tvError.innerHTML = "Nome de usuário inválido ou já existe.";
-            inputName.value = "";
+            errorMessage = "Nome de usuário inválido ou já existe.";
             break;
         case STATUS_CODE.UNPROCESSABLE_ENTITY:
-            tvError.innerHTML = "Nome de usuário inválido.";
-            inputName.value = "";
+            errorMessage = "Nome de usuário inválido.";
             break;    
         default:
-            tvError.innerHTML = "Erro ao entrar, tente novamente mais tarde.";
+            errorMessage = "Erro ao entrar, tente novamente mais tarde.";
+            retry = true;
             break;
+    }
+
+    if (retry){
+        ajaxRetry(AJAX.POST_PARTICIPANTS, errorMessage, status);
+    } else {
+
+        if (WINDOWS.CURRENT === WINDOWS.LOGIN){
+            const tvError = document.querySelector(".window-login div.center span.error");
+            tvError.innerHTML = errorMessage;
+            inputName.value = "";
+        } else {
+            alert("Você não está logado na sala.");
+            toggleWindowLogin(ENABLED);
+        }
+
+        loading(false);
     }
 }
 
 function joinRoom(isRejoining){
     
     if (!checkInternet(true)) {return;}
-    if (isLoading) {return;}
-
     clearAllIntervals();
-
     loading(true);
     let funSuccess;
 
@@ -56,7 +73,7 @@ function joinRoom(isRejoining){
     }
 
     if (!StringUtils.isBlank(thisUser.name)){
-        axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/participants", {name: thisUser.name})
+        axios.post(API_URL.PARTICIPANTS, {name: thisUser.name})
         .then(funSuccess)
         .catch(joinRoomError);
     } else {
@@ -92,10 +109,10 @@ function keepActiveError(error) {
 }
 
 function keepActive(){
-
+    
     if (!checkInternet(false)) {return;}
 
-        axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v3/uol/status", {name: thisUser.name})
+        axios.post(API_URL.STATUS, {name: thisUser.name})
         .then(keepActiveSuccess)
         .catch(keepActiveError);
 }

@@ -54,6 +54,8 @@ const AUTO = 2;
 const KEY_TODOS = "Todos"
 
 let intervals = [];
+let thisUser = {name: "", retires: 0};
+
 let isLoading = false;
 let buttonsStates = [{window: WINDOWS.LOGIN, state: false}, {window: WINDOWS.CHAT, state: false}];
 let thisMessage = {type: MESSAGE_TYPE.MESSAGE, to: null, retries: 0}

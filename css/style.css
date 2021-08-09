@@ -138,6 +138,7 @@ input:focus {
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    transition: left 1s;
 }
 
 .window-login img.logo {
@@ -202,8 +203,7 @@ input:focus {
     display: none;
 }
 
-section.window-login.swipe-left {
-    transition: 1s !important;
+section.window-login.closed {
     left: -100vw !important;
 }
 

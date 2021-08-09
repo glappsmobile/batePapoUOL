@@ -1,5 +1,4 @@
 let onlineUsers = [];
-let thisUser = {};
 
 
 function renderUsers(users) {
