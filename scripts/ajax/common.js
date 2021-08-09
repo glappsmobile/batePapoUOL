@@ -40,10 +40,10 @@ function ajaxRetry(ajaxName, errorMessage, status) {
             }
         }
 
-        if (doLoad) { loading(false); }
+        if (doLoad) { loading.stop(); }
         
     } else if (array.retries < CONFIG.MAX_RETRIES){
-        if (doLoad) { loading(true); }
+        if (doLoad) { loading.start(); }
         array.retries++;
         setTimeout(ajaxFunction, CONFIG.DELAY_RETRY);
     }
