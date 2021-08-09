@@ -149,7 +149,7 @@ input:focus {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    transition: all 0.5s;
+    transition: left 0.5s;
 }
 
 .window-login img.logo {
@@ -157,7 +157,6 @@ input:focus {
     top: 72px;
     width: 130px;
     height: 92px;
-        
 }
 
 .window-login div.center {
@@ -167,16 +166,13 @@ input:focus {
     align-items: center;
     justify-content: center;
     width: 100%;
-    transition: all 1s;
+    transition: all 0.1s;
 }
 
 .window-login div.center div {
     display: flex;
     flex-direction: column;
     width: auto;
-    transition: all 1s;
-
-
 }
 
 .window-login div.center span.error{
@@ -201,6 +197,7 @@ input:focus {
     background-color: #E7E7E7;
     color: #696969;
     font-size: 18px;
+    border-radius: 9px;
 }
 
 .window-login div.center div.container-loading{
