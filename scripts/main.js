@@ -5,7 +5,6 @@ function onLoad(){
 function initialConfig(){
     const inputMessage = document.querySelector(".container-send-message input.send");
     const inputName = document.querySelector(".window-login input.join");
-    const containerMessages = document.querySelector("ul.container-messages");
     inputName.focus();
     changeButtonAndInputState(DISABLED, ENABLED);
 
@@ -25,10 +24,6 @@ function initialConfig(){
             event.preventDefault();
             if (buttonsStates[1].state) { sendMessage(); }
         }
-    });
-
-    inputMessage.addEventListener('focus', (event) => {
-        ScrollUtils.scrollToBottom(containerMessages);
     });
 }
 
