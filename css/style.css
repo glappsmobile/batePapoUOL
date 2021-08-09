@@ -167,13 +167,15 @@ input:focus {
     align-items: center;
     justify-content: center;
     width: 100%;
-    transition: 0.5s;
+    transition: 1s;
 }
 
 .window-login div.center div {
     display: flex;
     flex-direction: column;
     width: auto;
+    transition: 1s;
+
 }
 
 .window-login div.center span.error{

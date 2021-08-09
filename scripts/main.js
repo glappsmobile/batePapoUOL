@@ -1,7 +1,6 @@
 /* TODO:
 *   freeze some arrays
 *   transition to div.center login
-*   input message going over logo if mobile keyboard opens
 *   move up container message when mobile keyboard opened
 */
 
