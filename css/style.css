@@ -273,7 +273,7 @@ aside.menu-right > span {
 
 aside.menu-right > ul {
     margin-top: 4px;
-    max-height: calc(100vh - 300px);
+    max-height: 65%;
     overflow-y: scroll;
 }
 
